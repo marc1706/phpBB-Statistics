@@ -822,7 +822,7 @@ function get_total_members()
     $return = 0;
 
     $sql = 'SELECT (MAX(user_id) - (MAX(user_id) - COUNT(user_id))) AS total
-                FROM phpbb_users
+                FROM ' . USERS_TABLE . '
                 WHERE ' .  $db->sql_in_set('user_type', USER_INACTIVE, true);
     $result = $db->sql_query($sql);
     $total= $db->sql_fetchfield('total') - 1; // subtract 1 for ANONYMOUS
