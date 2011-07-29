@@ -1811,9 +1811,15 @@ function get_subscriptions_count()
 * possible modes: post(default), edit
 * Copyright (c) 2009 Marc Alexander(marc1706) www.m-a-styles.de
 */
-function save_bbcode_smiley_count($data, $mode)
+function save_bbcode_smiley_count($data, $mode, $update_message = true)
 {
-	global $db;	
+	global $db;
+	
+	if($update_message == false)
+	{
+		// nothing to do here
+		return;
+	}
 	
 	$matches = $smilies = $smiley_ary = $bbcode_ary =  array();
 	
