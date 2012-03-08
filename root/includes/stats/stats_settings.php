@@ -579,4 +579,4 @@ class stats_settings
 		$this->page_title = $user->lang['STATISTICS'] . ' &bull; ' . $user->lang[strtoupper($this->lang_name)];
 	}
 }
-?>
+

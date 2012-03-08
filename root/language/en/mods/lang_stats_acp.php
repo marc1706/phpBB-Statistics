@@ -96,6 +96,4 @@ $lang = array_merge($lang, array(
 	'INSTALLED_ADDONS'						=> 'Installed Add-Ons',
 	'UNINSTALLED_ADDONS'					=> 'Uninstalled Add-Ons',
 
-	));
-
-?>
+));

@@ -613,4 +613,3 @@ class stats_basic
 		
 	}
 }
-?>

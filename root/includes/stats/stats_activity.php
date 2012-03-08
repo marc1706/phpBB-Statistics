@@ -731,4 +731,3 @@ class stats_activity
 		$this->page_title = $user->lang['STATISTICS'] . ' &bull; ' . $user->lang[strtoupper($this->lang_name)];
 	}
 }
-?>

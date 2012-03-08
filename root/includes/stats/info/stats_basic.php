@@ -43,4 +43,3 @@ class stats_basic_info
 	{
 	}
 }
-?>

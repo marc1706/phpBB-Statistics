@@ -24,5 +24,3 @@ $lang = array_merge($lang, array(
 	'ACP_STATS_GENERAL_INFO'					=> 'Einstellungen',
 	'ACP_STATS_ADDONS'							=> 'Add-Ons',
 ));
-
-?>

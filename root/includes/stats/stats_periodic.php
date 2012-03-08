@@ -706,4 +706,3 @@ class stats_periodic
 		
 	}
 }
-?>

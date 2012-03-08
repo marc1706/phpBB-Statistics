@@ -2181,5 +2181,3 @@ function move_addon($mode = 'move_up', $size, $id, $classname)
 	$result = $db->sql_query($sql);
 	$db->sql_freeresult($result);
 }
-
-?>

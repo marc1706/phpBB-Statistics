@@ -31,5 +31,3 @@ class acp_stats_info
 		);
 	}
 }
-
-?>

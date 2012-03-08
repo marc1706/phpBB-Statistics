@@ -118,4 +118,3 @@ class stats_test
 		return $db->sql_query($sql);
 	}
 }
-?>

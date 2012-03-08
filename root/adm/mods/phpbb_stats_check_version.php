@@ -37,5 +37,3 @@ class phpbb_stats_check_version
 		);
 	}
 }
-
-?>

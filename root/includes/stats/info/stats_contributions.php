@@ -42,4 +42,3 @@ class stats_contributions_info
 	{
 	}
 }
-?>

@@ -63,5 +63,3 @@ $lang = array_merge($lang, array(
 	'UNSUPPORTED_DB'	=>	'Sorry, unsupported Databases found',
 	'UNSUPPORTED_VERSION' => 'Sorry, unsupported version found',
 ));
-
-?>

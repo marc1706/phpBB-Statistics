@@ -41,4 +41,3 @@ class stats_addons_info
 	{
 	}
 }
-?>

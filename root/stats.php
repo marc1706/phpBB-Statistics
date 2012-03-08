@@ -75,5 +75,3 @@ $module->assign_tpl_vars(append_sid("{$phpbb_root_path}stats.$phpEx"));
 
 // Generate the page, do not display/query online list
 $module->display($module->get_page_title(), false);
-
-?>

@@ -34,4 +34,3 @@ $lang = array_merge($lang, array(
 	'STATS_TEST_SHOW_EXPLAIN' 	=> 'This really does not do anything',
 	'INFO'						=> 'This add-on is just for testing purposes. You can remove it if you already added an add-on.',
 ));
-?>

@@ -43,4 +43,3 @@ class stats_periodic_info
 	{
 	}
 }
-?>

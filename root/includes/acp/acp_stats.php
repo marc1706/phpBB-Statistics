@@ -428,5 +428,3 @@ class acp_stats
 	
 	
 }
-
-?>

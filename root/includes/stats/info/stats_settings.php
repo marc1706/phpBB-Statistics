@@ -42,4 +42,3 @@ class stats_settings_info
 	{
 	}
 }
-?>

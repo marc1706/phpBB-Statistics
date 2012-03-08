@@ -186,4 +186,3 @@ class stats_addons
 		
 	}
 }
-?>

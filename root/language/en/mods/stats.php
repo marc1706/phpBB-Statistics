@@ -249,4 +249,3 @@ $lang = array_merge($lang, array(
 	// Error message
 	'STATS_NOT_ENABLED'					=> 'phpBB Statistics is currently disabled.',
 ));
-?>

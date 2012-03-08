@@ -43,4 +43,3 @@ class stats_activity_info
 	{
 	}
 }
-?>
