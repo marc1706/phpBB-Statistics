@@ -2,7 +2,6 @@
 /**
 *
 * @package acp
-* @version $Id: phpbb_stats_check_version.php 49 2009-07-09 10:11:46Z marc1706 $
 * @copyright (c) 2007 StarTrekGuide
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *

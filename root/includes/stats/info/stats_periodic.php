@@ -2,7 +2,6 @@
 /**
 *
 * @package phpBB Statistics
-* @version $Id: stats_periodic.php 171 2011-02-09 01:58:16Z marc1706 $
 * @copyright (c) 2009 - 2010 Marc Alexander(marc1706) www.m-a-styles.de, (c) TheUniqueTiger - Nayan Ghosh
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License
 * @based on: Forum Statistics by TheUniqueTiger - Nayan Ghosh
