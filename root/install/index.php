@@ -112,6 +112,7 @@ $versions = array(
 			array('stats_activity_users_hide_anonymous', '1', 0),
 			array('stats_resync', '1', 0),
 			array('stats_resync_last_sync', '1', 0),
+			array('stats_cache_time', '24', 0),
 		),
 
 		'module_add' => array(
