@@ -19,12 +19,12 @@ if (!defined('IN_PHPBB'))
 * future functions should be ordered by their name (a-z)
 */
 
-class stats_functions
+class phpbb_stats
 {
 	private $cache_time;
 	public $modules;
 
-	/*
+	/**
 	* initialise variables for following actions
 	*/
 	public function __construct()
@@ -42,7 +42,7 @@ class stats_functions
 		$ret = $cache->get('stats_modules')
 		if ($ret === false)
 		{
-			$sql = 'SELECT * FROM ' . STATS_MODULES_TABLE;
+			$sql = 'SELECT * FROM ' . STATS_MODULES_TABLE . ' ORDER BY module_id ASC';
 			$result = $db->sql_query($sql);
 			
 			while ($row = $db->sql_fetchrow($result))

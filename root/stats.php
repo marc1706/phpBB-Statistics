@@ -20,7 +20,7 @@ include($phpbb_stats_path . 'includes/functions.' . $phpEx);
 // Start session
 $user->session_begin();
 $auth->acl($user->data);
-$user->setup();
+$user->setup('mods/stats');
 
 /**
 * check if user has auth to view the stats
@@ -34,7 +34,7 @@ if (!$auth->acl_get('u_view_stats'))
 * check if the stats are enabled
 * redirect to index if not
 */
-if (!$stats_config['stats_enable'])
+if (!$config['stats_enable'])
 {
 	redirect(append_sid($phpbb_root_path . 'index.' . $phpEx));
 }
@@ -43,7 +43,7 @@ if (!$stats_config['stats_enable'])
 * load $stats class and globalize it
 */
 global $stats;
-$stats = new stats_functions();
+$stats = new phpbb_stats();
 
 // setup initial vars
 $p = request_var('p', 0);
@@ -52,22 +52,78 @@ $id = request_var('id', 0);
 // get modules
 $stats->obtain_modules();
 	
-// decide what module to display
+/** 
+* decide what module to display
+*/
 if ($p == 0 && $id == 0)
 {
-
+	// use the first category
+	foreach ($stats->modules as $cur_module)
+	{
+		if ($cur_module['module_parent'] == 0)
+		{
+			$cur_parent = $cur_module['module_id'];
+			break;
+		}
+	}
+	
+	// now grab the first module of the first category
+	foreach ($stats->modules as $cur_module)
+	{
+		if ($cur_module['module_parent'] == $cur_parent && $cur_module['module_order'] == 0)
+		{
+			$module = $cur_module;
+			break;
+		}
+	}
 }
 elseif ($p != 0 && $id == 0)
 {
-
+	// grab the first module of the selected parent
+	foreach ($stats->modules as $cur_module)
+	{
+		if ($cur_module['module_parent'] == $p && $cur_module['module_order'] == 0)
+		{
+			$module = $cur_module;
+			break;
+		}
+	}
 }
 else
 {
-
+	// grab the module with the selected module id
+	foreach ($stats->modules as $cur_module)
+	{
+		if ($cur_module['module_id'] == $id)
+		{
+			$module = $cur_module;
+			break;
+		}
+	}
 }
 
+$class_name = $module['module_classname'] . '_module'; // classes have '_module' appended
 
+/**
+* load all module specific files
+*/
+if (!class_exists($class_name))
+{
+	include($phpbb_stats_path . 'modules/' . $module['module_classname'] . '.' . $phpEx);
+}
 
+if (!class_exists($class_name))
+{
+	trigger_error(sprintf($user->lang['CLASS_NOT_FOUND'], $class_name, $module['module_classname']), E_USER_ERROR);
+}
+
+$stats_module = new $classname();
+
+$stats_template = $stats_module->get_stats();
+
+$template->assign_vars(array(
+	'TEMPLATE_FILE'		=> ($stats_template != false) ? $stats_template : '',
+));
 
 
 // Output the page

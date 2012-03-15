@@ -40,8 +40,6 @@ class stats_basic_module
 		/** 
 		* Get total stats from config
 		*/
-		
-		// get total forums
 		$total_forums = $stats->total_forums();
 		$total_attachments = $stats->total_attachments();
 		
