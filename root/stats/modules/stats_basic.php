@@ -35,27 +35,55 @@ class stats_basic_module
 	*/
 	public function get_stats($module_id)
 	{
-		global $db, $config, $temlate, $stats;
+		global $db, $config, $template, $stats, $user;
 		
 		/** 
 		* Get total stats from config
 		*/
 		$total_forums = $stats->total_forums();
 		$total_attachments = $stats->total_attachments();
+		$total_polls = $stats->total_polls();
+		$total_topic_views = $stats->total_topic_views();
 		
+		// get board age -- always round down
+		$board_age = array(
+			'seconds'		=> time() - $config['board_startdate'],
+			'minutes'		=> floor((time() - $config['board_startdate']) / 60),
+			'hours'			=> floor((time() - $config['board_startdate']) / 3600),
+			'days'			=> floor((time() - $config['board_startdate']) / 86400),
+		);
 		
-		
-		
+		$forum_types = $stats->forum_type_count();
+		$topic_types = $stats->topic_type_count();
 		
 		$template->assign_vars(array(
-			'TOTAL_POSTS'		=> $config['num_posts'],
-			'TOTAL_TOPICS'		=> $config['num_topics'],
-			'TOTAL_USERS'		=> $config['num_users'],
-			
-		
+			'TOTAL_POSTS'			=> $config['num_posts'],
+			'TOTAL_TOPICS'			=> $config['num_topics'],
+			'TOTAL_USERS'			=> $config['num_users'],
+			'TOTAL_FORUMS'			=> $total_forums,
+			'TOTAL_ATTACHMENTS'		=> $total_attachments,
+			'TOTAL_POLLS'			=> $total_polls,
+			'TOTAL_TOPIC_VIEWS'		=> $total_topic_views,
+			'MAX_USERS'				=> $config['record_online_users'],
+			'MAX_USERS_DATE'		=> $user->format_date($config['record_online_date']),
+			'AVG_POSTS_PER_DAY'		=> ($board_age['days'] > 0) ? ($config['num_posts'] / $board_age['days']) : 0,
+			'AVG_TOPICS_PER_DAY'	=> ($board_age['days'] > 0) ? ($config['num_topics'] / $board_age['days']) : 0,
+			'AVG_REGS_PER_DAY'		=> ($board_age['days'] > 0) ? ($config['num_users'] / $board_age['days']) : 0,
+			'AVG_ATTACH_PER_DAY'	=> ($board_age['days'] > 0) ? ($total_attachments / $board_age['days']) : 0,
+			'AVG_POSTS_PER_MONTH'	=> ($board_age['days'] > 0) ? ($config['num_posts'] / ($board_age['days'] / (365 / 12))) : 0, // a year has 365 days split over 12 months
+			'AVG_TOPICS_PER_MONTH'	=> ($board_age['days'] > 0) ? ($config['num_topics'] / ($board_age['days'] / (365 / 12))) : 0, // a year has 365 days split over 12 months
+			'TOTAL_FORUM_CAT'		=> $forum_types[FORUM_CAT],
+			'TOTAL_FORUM_POST'		=> $forum_types[FORUM_POST],
+			'TOTAL_FORUM_LINK'		=> $forum_types[FORUM_LINK],
+			'TOTAL_POST_NORMAL'		=> $topic_types[POST_NORMAL],
+			'TOTAL_POST_STICKY'		=> $topic_types[POST_STICKY],
+			'TOTAL_POST_ANNOUNCE'	=> $topic_types[POST_ANNOUNCE],
+			'TOTAL_POST_GLOBAL'		=> $topic_types[POST_GLOBAL],
+			'UNAPPROVED_TOPICS'		=> $stats->unapproved_topics(),
+			'UNAPPROVED_POSTS'		=> $stats->unapproved_posts(),
 		));
 		
-		
+		return 'stats_basic.html';
 	}
 	
 	
