@@ -51,7 +51,7 @@ class phpbb_stats
 	{
 		global $db, $cache;
 		
-		$ret = $cache->get('stats_forum_types')
+		$ret = $cache->get('stats_forum_types');
 		if ($ret === false)
 		{
 			$ret = array(
@@ -80,22 +80,13 @@ class phpbb_stats
 			$cache->put('stats_forum_types', $ret, $this->cache_time);
 		}
 		
-		switch($type)
+		if (!empty($type) && isset($ret[$type]))
 		{
-			case FORUM_CAT:
-				return $ret[FORUM_CAT];
-			break;
-
-			case FORUM_POST:
-				return $ret[FORUM_POST];
-			break;
-
-			case FORUM_LINK:
-				return $ret[FORUM_LINK];
-			break;
-			
-			default:
-				return $ret;
+			return $ret[$type];
+		}
+		else
+		{
+			return $ret;
 		}
 	}
 
@@ -106,7 +97,7 @@ class phpbb_stats
 	{
 		global $db, $cache;
 		
-		$ret = $cache->get('stats_modules')
+		$ret = $cache->get('stats_modules');
 		if ($ret === false)
 		{
 			$sql = 'SELECT * FROM ' . STATS_MODULES_TABLE . ' ORDER BY module_id ASC';
@@ -134,7 +125,7 @@ class phpbb_stats
 	{
 		global $db, $cache;
 		
-		$ret = $cache->get('stats_topic_types')
+		$ret = $cache->get('stats_topic_types');
 		if ($ret === false)
 		{
 			$ret = array(
@@ -164,26 +155,13 @@ class phpbb_stats
 			$cache->put('stats_topic_types', $ret, $this->cache_time);
 		}
 		
-		switch($type)
+		if (!empty($type) && isset($ret[$type]))
 		{
-			case POST_NORMAL:
-				return $ret[POST_NORMAL];
-			break;
-
-			case POST_STICKY:
-				return $ret[POST_STICKY];
-			break;
-
-			case POST_ANNOUNCE:
-				return $ret[POST_ANNOUNCE];
-			break;
-			
-			case POST_GLOBAL:
-				return $ret[POST_GLOBAL];
-			break;
-			
-			default:
-				return $ret;
+			return $ret[$type];
+		}
+		else
+		{
+			return $ret;
 		}
 	}
 
@@ -321,6 +299,70 @@ class phpbb_stats
 		return $ret;
 	}
 
+	/**
+	* get the count of each user type
+	* we only count active/inactive users and bots that have visited/haven't visited
+	*
+	* param $type (string):	choose wether you want the whole array or just one type
+	* 						getting only one type will not decrease the server load
+	*/
+	public function user_accounts_data($type = '')
+	{
+		global $db, $cache, $config;
+		
+		$ret = $cache->get('stats_user_accounts_data');
+		if ($ret === false)
+		{
+			$ret = array(
+				'active'			=> 0,
+				'inactive'			=> 0,
+				'visited_bots'		=> 0,
+				'registered_bots'	=> 0,
+			);
+			
+			// user last visit shouldn't be more than 30 days away in order to call him/her active
+			// @todo: should be an ACP option
+			$last_visit_min = time() - (30 * 86400);
+
+			$sql = 'SELECT COUNT(user_id) AS active_users 
+					FROM ' . USERS_TABLE . '
+					WHERE user_lastvisit >= ' . $last_visit_min . '
+					AND user_type = (' . USER_NORMAL . ' OR ' . USER_FOUNDER . ')';
+			$result = $db->sql_query($sql);
+			$ret['active'] = $db->sql_fetchfield('active_users');
+			$ret['inactive'] = $config['num_users'] - $ret['active'];
+			$db->sql_freeresult($result);
+			
+			$sql = 'SELECT user_id AS user_id, user_lastvisit AS visited
+					FROM ' . USERS_TABLE . '
+					WHERE user_type = ' . USER_IGNORE;
+			$result = $db->sql_query($sql);
+			while ($row = $db->sql_fetchrow($result))
+			{
+				if ($row['visited'] > 0)
+				{
+					++$ret['visited_bots'];
+					++$ret['registered_bots'];
+				}
+				else
+				{
+					++$ret['registered_bots'];
+				}
+			}
+			$db->sql_freeresult($result);
+			
+			$cache->put('stats_user_accounts_data', $ret, $this->cache_time);
+		}
+		
+		if (!empty($type) && isset($ret[$type]))
+		{
+			return $ret[$type];
+		}
+		else
+		{
+			return $ret;
+		}
+	}
 
 
 

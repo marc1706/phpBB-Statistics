@@ -16,6 +16,7 @@ $phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : '../';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 
 include($phpbb_root_path . 'common.' . $phpEx);
+include($phpbb_root_path . 'stats/includes/constants.' . $phpEx);
 $user->session_begin();
 $auth->acl($user->data);
 $user->setup();
@@ -63,29 +64,25 @@ $versions = array(
 		),
 
 		'permission_set' => array(
-			array('GLOBAL_MODERATORS', 'u_view_stats'),
-			array('ADMINISTRATORS', 'u_view_stats'),
-			array('ADMINISTRATORS', 'a_manage_stats'),
+			array('GLOBAL_MODERATORS', 'u_view_stats', 'group'),
+			array('ADMINISTRATORS', 'u_view_stats', 'group'),
+			array('ADMINISTRATORS', 'a_manage_stats', 'group'),
 		),
 
 		'table_add' => array(
-			array(phpbb_stats_modules, array(
+			array(STATS_MODULES_TABLE, array(
 				'COLUMNS' => array(
-					'module_id' => array('UINT:3', '', 'auto_increment'),
+					'module_id' => array('UINT:3', NULL, 'auto_increment'),
 					'module_classname' => array('VCHAR:64', ''),
-					'module_parent' => array('UINT:3', ''),
-					'module_order' => array('UINT:3', ''),
-					'module_status' => array('BOOL', ''),
+					'module_parent' => array('UINT:3', 0),
+					'module_order' => array('UINT:3', 0),
+					'module_status' => array('BOOL', true),
 					'module_name' => array('VCHAR', ''),
 				),
 
-				'PRIMARY_KEY'	=> array('module_id', ''),
-
-				'KEYS'		=> array(
-					'' => array('PRIMARY', array('module_id')),
-				),
+				'PRIMARY_KEY'	=> 'module_id',
 			)),
-
+/*
 			array(phpbb_stats_data, array(
 				'COLUMNS' => array(
 					'name' => array('VCHAR', ''),
@@ -98,11 +95,11 @@ $versions = array(
 					'' => array('PRIMARY', array('name')),
 				),
 			)),
-
+*/
 		),
 
 		'table_column_add' => array(
-			array('PROFILE_FIELDS_TABLE', 'field_stats_show', array('BOOL', '0')),
+			array(PROFILE_FIELDS_TABLE, 'field_stats_show', array('BOOL', '0')),
 		),
 
 		'config_add' => array(

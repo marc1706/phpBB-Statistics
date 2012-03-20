@@ -15,6 +15,7 @@ $phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './';
 $phpbb_stats_path = $phpbb_root_path . 'stats/';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 include($phpbb_root_path . 'common.' . $phpEx);
+include($phpbb_stats_path . 'includes/constants.' . $phpEx);
 include($phpbb_stats_path . 'includes/functions.' . $phpEx);
 
 // Start session
@@ -117,7 +118,7 @@ if (!class_exists($class_name))
 	trigger_error(sprintf($user->lang['CLASS_NOT_FOUND'], $class_name, $module['module_classname']), E_USER_ERROR);
 }
 
-$stats_module = new $classname();
+$stats_module = new $class_name();
 
 $stats_template = $stats_module->get_stats();
 
@@ -125,6 +126,7 @@ $template->assign_vars(array(
 	'TEMPLATE_FILE'		=> ($stats_template != false) ? $stats_template : '',
 ));
 
+$page_title = (isset($user->lang[$module['module_name']])) ? $user->lang[$module['module_name']] : $module['module_name'];
 
 // Output the page
 page_header($page_title, false);

@@ -33,7 +33,7 @@ class stats_basic_module
 	/**
 	* load stats for this module
 	*/
-	public function get_stats($module_id)
+	public function get_stats()
 	{
 		global $db, $config, $template, $stats, $user;
 		
@@ -55,6 +55,7 @@ class stats_basic_module
 		
 		$forum_types = $stats->forum_type_count();
 		$topic_types = $stats->topic_type_count();
+		$user_accounts_data = $stats->user_accounts_data();
 		
 		$template->assign_vars(array(
 			'TOTAL_POSTS'			=> $config['num_posts'],
@@ -81,6 +82,10 @@ class stats_basic_module
 			'TOTAL_POST_GLOBAL'		=> $topic_types[POST_GLOBAL],
 			'UNAPPROVED_TOPICS'		=> $stats->unapproved_topics(),
 			'UNAPPROVED_POSTS'		=> $stats->unapproved_posts(),
+			'ACTIVE_USERS'			=> $user_accounts_data['active'],
+			'INACTIVE_USERS'		=> $user_accounts_data['inactive'],
+			'REGISTERED_BOTS'		=> $user_accounts_data['registered_bots'],
+			'VISITED_BOTS'			=> $user_accounts_data['visited_bots'],
 		));
 		
 		return 'stats_basic.html';

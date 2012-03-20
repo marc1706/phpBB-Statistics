@@ -24,7 +24,7 @@ class acp_stats
 		
 		define('IN_STATS_MOD', true);
 
-		include($phpbb_root_path . 'statistics/includes/functions.' . $phpEx);
+		include($phpbb_root_path . 'stats/includes/functions.' . $phpEx);
 		
 		$stats_config = obtain_stats_config();
 
