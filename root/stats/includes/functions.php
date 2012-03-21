@@ -23,16 +23,20 @@ class phpbb_stats
 {
 	private $cache_time;
 	public $modules;
+	private $stats_link;
 
 	/**
 	* initialise variables for following actions
 	*/
 	public function __construct()
 	{
-		global $config;
+		global $config, $phpbb_root_path, $phpEx;
 		
 		// cache time is in hours
 		$this->cache_time = $config['stats_cache_time'] * 3600;
+		
+		// append_sid will be run later
+		$this->stats_link = $phpbb_root_path . 'stats.' . $phpEx;
 	}
 	
 	/**
@@ -116,6 +120,44 @@ class phpbb_stats
 	}
 	
 	/**
+	* parse the menu
+	*
+	* param $module_id (int): the currently active module
+	*/
+	public function parse_menu($module)
+	{
+		global $template;
+
+		if (!is_array($module))
+		{
+			// @todo: add real error message
+			trigger_error('GENERAL_ERROR');
+		}
+		
+		foreach ($this->modules as $cur_module)
+		{
+			// we have a parent module
+			if ($cur_module['module_parent'] == false)
+			{
+				$template->assign_block_vars('t_block1', array(
+					'U_TITLE'		=> append_sid($this->stats_link, 'p=' . $cur_module['module_id']),
+					'L_TITLE'		=> (isset($user->lang[$cur_module['module_name']])) ? $user->lang[$cur_module['module_name']] : $cur_module['module_name'],
+					'S_SELECTED'	=> ($module['module_parent'] == $cur_module['module_id']) ? true : false,
+				));
+			}
+			// and we have a sub-module
+			else
+			{
+				$template->assign_block_vars('t_block2', array(
+					'U_TITLE'		=> append_sid($this->stats_link, 'p=' . $cur_module['module_parent'] . '&amp;id=' . $cur_module['module_id']),
+					'L_TITLE'		=> (isset($user->lang[$cur_module['module_name']])) ? $user->lang[$cur_module['module_name']] : $cur_module['module_name'],
+					'S_SELECTED'	=> ($module['module_id'] == $cur_module['module_id']) ? true : false,
+				));
+			}
+		}
+	}
+	
+	/**
 	* get the count of each topic type
 	*
 	* param $type (string):	choose wether you want the whole array or just one topic type
@@ -133,6 +175,7 @@ class phpbb_stats
 				POST_STICKY		=> 0,
 				POST_ANNOUNCE	=> 0,
 				POST_GLOBAL		=> 0,
+				'unapproved'	=> 0,
 			);
 
 			$sql = 'SELECT * FROM ' . TOPICS_TABLE;
@@ -148,6 +191,11 @@ class phpbb_stats
 				{
 					// other mods might have added additional topic types
 					$ret[$row['topic_type']] = 1;
+				}
+				
+				if ($row['topic_approved'] == false)
+				{
+					++$ret['unapproved'];
 				}
 			}
 			$db->sql_freeresult($result);
@@ -277,29 +325,6 @@ class phpbb_stats
 	}
 
 	/**
-	* get the total number of unapproved topics
-	*/
-	public function unapproved_topics()
-	{
-		global $db, $cache;
-		
-		$ret = $cache->get('stats_unapproved_topics');
-		if ($ret === false)
-		{
-			$sql = 'SELECT COUNT(DISTINCT(topic_id)) AS unapproved_topics
-					FROM ' . TOPICS_TABLE . '
-					WHERE topic_approved = 0';
-			$result = $db->sql_query($sql);
-			$ret = $db->sql_fetchfield('unapproved_topics');
-			$db->sql_freeresult($result);
-			
-			$cache->put('stats_unapproved_topics', $ret, $this->cache_time);
-		}
-		
-		return $ret;
-	}
-
-	/**
 	* get the count of each user type
 	* we only count active/inactive users and bots that have visited/haven't visited
 	*
@@ -335,11 +360,12 @@ class phpbb_stats
 			
 			$sql = 'SELECT user_id AS user_id, user_lastvisit AS visited
 					FROM ' . USERS_TABLE . '
-					WHERE user_type = ' . USER_IGNORE;
+					WHERE user_type = ' . USER_IGNORE . '
+					AND user_id <> ' . ANONYMOUS;
 			$result = $db->sql_query($sql);
 			while ($row = $db->sql_fetchrow($result))
 			{
-				if ($row['visited'] > 0)
+				if ($row['visited'] != false)
 				{
 					++$ret['visited_bots'];
 					++$ret['registered_bots'];

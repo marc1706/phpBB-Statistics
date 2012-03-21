@@ -123,8 +123,11 @@ $stats_module = new $class_name();
 $stats_template = $stats_module->get_stats();
 
 $template->assign_vars(array(
-	'TEMPLATE_FILE'		=> ($stats_template != false) ? $stats_template : '',
+	'TEMPLATE_FILE'		=> ($stats_template != false) ? 'stats/' . $stats_template : '',
 ));
+
+// Now create the menu
+$stats->parse_menu($module);
 
 $page_title = (isset($user->lang[$module['module_name']])) ? $user->lang[$module['module_name']] : $module['module_name'];
 
@@ -132,7 +135,7 @@ $page_title = (isset($user->lang[$module['module_name']])) ? $user->lang[$module
 page_header($page_title, false);
 
 $template->set_filenames(array(
-	'body' => 'stats')
+	'body' => 'stats.html')
 );
 
 page_footer();

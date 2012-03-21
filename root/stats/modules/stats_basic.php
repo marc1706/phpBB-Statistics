@@ -67,12 +67,12 @@ class stats_basic_module
 			'TOTAL_TOPIC_VIEWS'		=> $total_topic_views,
 			'MAX_USERS'				=> $config['record_online_users'],
 			'MAX_USERS_DATE'		=> $user->format_date($config['record_online_date']),
-			'AVG_POSTS_PER_DAY'		=> ($board_age['days'] > 0) ? ($config['num_posts'] / $board_age['days']) : 0,
-			'AVG_TOPICS_PER_DAY'	=> ($board_age['days'] > 0) ? ($config['num_topics'] / $board_age['days']) : 0,
-			'AVG_REGS_PER_DAY'		=> ($board_age['days'] > 0) ? ($config['num_users'] / $board_age['days']) : 0,
-			'AVG_ATTACH_PER_DAY'	=> ($board_age['days'] > 0) ? ($total_attachments / $board_age['days']) : 0,
-			'AVG_POSTS_PER_MONTH'	=> ($board_age['days'] > 0) ? ($config['num_posts'] / ($board_age['days'] / (365 / 12))) : 0, // a year has 365 days split over 12 months
-			'AVG_TOPICS_PER_MONTH'	=> ($board_age['days'] > 0) ? ($config['num_topics'] / ($board_age['days'] / (365 / 12))) : 0, // a year has 365 days split over 12 months
+			'AVG_POSTS_PER_DAY'		=> ($board_age['days'] > 0) ? sprintf('%.2f',($config['num_posts'] / $board_age['days'])) : $config['num_posts'],
+			'AVG_TOPICS_PER_DAY'	=> ($board_age['days'] > 0) ? sprintf('%.2f',($config['num_topics'] / $board_age['days'])) : $config['num_topics'],
+			'AVG_REGS_PER_DAY'		=> ($board_age['days'] > 0) ? sprintf('%.2f',($config['num_users'] / $board_age['days'])) : $config['num_users'],
+			'AVG_ATTACH_PER_DAY'	=> ($board_age['days'] > 0) ? sprintf('%.2f',($total_attachments / $board_age['days'])) : $total_attachments,
+			'AVG_POSTS_PER_MONTH'	=> ($board_age['days'] > 0) ? sprintf('%.2f',($config['num_posts'] / ($board_age['days'] / (365 / 12)))) : $config['num_posts'], // a year has 365 days split over 12 months
+			'AVG_TOPICS_PER_MONTH'	=> ($board_age['days'] > 0) ? sprintf('%.2f',($config['num_topics'] / ($board_age['days'] / (365 / 12)))) : $config['num_topics'], // a year has 365 days split over 12 months
 			'TOTAL_FORUM_CAT'		=> $forum_types[FORUM_CAT],
 			'TOTAL_FORUM_POST'		=> $forum_types[FORUM_POST],
 			'TOTAL_FORUM_LINK'		=> $forum_types[FORUM_LINK],
@@ -80,7 +80,7 @@ class stats_basic_module
 			'TOTAL_POST_STICKY'		=> $topic_types[POST_STICKY],
 			'TOTAL_POST_ANNOUNCE'	=> $topic_types[POST_ANNOUNCE],
 			'TOTAL_POST_GLOBAL'		=> $topic_types[POST_GLOBAL],
-			'UNAPPROVED_TOPICS'		=> $stats->unapproved_topics(),
+			'UNAPPROVED_TOPICS'		=> $topic_types['unapproved'],
 			'UNAPPROVED_POSTS'		=> $stats->unapproved_posts(),
 			'ACTIVE_USERS'			=> $user_accounts_data['active'],
 			'INACTIVE_USERS'		=> $user_accounts_data['inactive'],

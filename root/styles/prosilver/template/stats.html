@@ -1,5 +1,51 @@
 <!-- INCLUDE overall_header.html -->
 <!-- copyright (c) 2012 Marc Alexander(marc1706) www.m-a-styles.de //-->
 <h2>{L_STATS}</h2>
-<!-- INCLUDE {TEMPLATE_FILE} -->
+<div id="tabs">
+	<ul>
+		<!-- BEGIN t_block1 -->
+		<li <!-- IF t_block1.S_SELECTED -->class="activetab"<!-- ENDIF -->><a href="{t_block1.U_TITLE}"><span>{t_block1.L_TITLE}</span></a></li>
+		<!-- END t_block1 -->
+	</ul>
+</div>
+
+<div class="panel bg3">
+	<div class="inner"><span class="corners-top"><span></span></span>
+
+	<div style="width: 100%;">
+
+	<div id="cp-menu">
+		<div id="navigation">
+			<ul>
+		<!-- BEGIN t_block2 -->
+			<!-- IF (S_PRIVMSGS and t_block2.S_LAST_ROW) or not S_PRIVMSGS -->
+				<!-- IF t_block2.S_SELECTED -->
+					<li id="active-subsection"><a href="{t_block2.U_TITLE}"><span>{t_block2.L_TITLE}</span></a></li>
+				<!-- ELSE -->
+					<li><a href="{t_block2.U_TITLE}"><span>{t_block2.L_TITLE}</span></a></li>
+				<!-- ENDIF -->
+			<!-- ENDIF -->
+		<!-- END t_block2 -->
+			</ul>
+		</div>
+	</div>
+
+	<div id="cp-main" class="ucp-main">
+	<!-- INCLUDE {TEMPLATE_FILE} -->
+		<div class="panel">
+		<div class="inner"><span class="corners-top"><span></span></span>
+			<div style="text-align:center;">powered by <a href="http://www.m-a-styles.de/">phpBB Statistics</a> &copy;</div>
+			<!--
+			*	Please do not remove the above link
+			*	Removing it is an offence against the GNU GPL v2 license under which phpBB Statistics is licensed
+			*	Without this link you have no right to use phpBB Statistics
+			-->
+		<span class="corners-bottom"><span></span></span></div>
+	</div>
+	</div>
+	<div class="clear"></div>
+
+	</div>
+	<span class="corners-bottom"><span></span></span></div>
+</div>
 <!-- INCLUDE overall_footer.html -->
