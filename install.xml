@@ -63,7 +63,7 @@
 			<file from="root/language/en/mods/*.*" to="language/en/mods/*.*" />
 			<file from="root/stats/*.*" to="stats/*.*" />
 			<file from="root/styles/prosilver/template/stats/*.*" to="styles/prosilver/template/stats/*.*" />
-			<file from="root/styles/prosilver/theme/statistics.css" to="styles/prosilver/theme/statistics.css" />
+			<file from="root/styles/prosilver/theme/stats.css" to="styles/prosilver/theme/stats.css" />
 			<file from="root/stats.php" to="stats.php" />
 			<file from="root/umil/*.*" to="umil/*.*" />
 		</copy>
@@ -197,7 +197,7 @@ $lang = array_merge($lang, array(
 		<open src="styles/prosilver/theme/stylesheet.css">
 			<edit>
 				<find><![CDATA[@import url("colours.css");]]></find>
-				<action type="after-add"><![CDATA[@import url("statistics.css");]]></action>
+				<action type="after-add"><![CDATA[@import url("stats.css");]]></action>
 			</edit>
 		</open>
 		<php-installer>install/index.php</php-installer>
