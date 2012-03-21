@@ -1,73 +1,77 @@
-<h2>{L_TITLE}</h2>
-
-<div class="panel">
-	<div class="inner_fs"><span class="corners-top"><span></span></span>
+<div class="panel" id="stats">
+	<div class="inner"><span class="corners-top"><span></span></span>
 	<h3>{L_OVERALL}</h3>
-	<table class="fs_details_list">
-		<tr>
-			<td class="col1">{L_TOTAL_POSTS}:</td><td class="col2">{TOTAL_POSTS}</td>
-			<td class="col3">{L_TOTAL_TOPICS}:</td><td class="col4">{TOTAL_TOPICS}</td>
-		</tr>		
-		<tr>
-			<td class="col1">{L_TOTAL_USERS}:</td> <td class="col2">{TOTAL_USERS}</td>
-			<td class="col3">{L_TOTAL_FORUMS}:</td> <td class="col4">{TOTAL_FORUMS}</td>
-		</tr>
-		<tr>
-			<td class="col1">{L_TOTAL_ATTACHMENTS}:</td> <td class="col2">{TOTAL_ATTACHMENTS}</td>
-			<td class="col3">{L_TOTAL_POLLS}:</td> <td class="col4">{TOTAL_POLLS}</td>
-		</tr>
-		<tr>
-			<td class="col1">{L_TOTAL_VIEWS}:</td> <td class="col2">{TOTAL_TOPIC_VIEWS}</td>
-			<td class="col3">{L_MOST_ONLINE}:</td> <td class="col4" colspan="3">{MAX_USERS} ({L_ONLINE_ON} {MAX_USERS_DATE})</td>
-		</tr>
-	</table><br />
+	<div class="column1">
+		<dl class="details">
+			<dt>{L_TOTAL_POSTS}:</dt><dd>{TOTAL_POSTS}</dd>
+			<dt>{L_TOTAL_USERS}:</dt><dd>{TOTAL_USERS}</dd>
+			<dt>{L_TOTAL_ATTACHMENTS}:</dt><dd>{TOTAL_ATTACHMENTS}</dd>
+			<dt>{L_TOTAL_VIEWS}:</dt><dd>{TOTAL_TOPIC_VIEWS}</dd>
+		</dl>
+	</div>
+	<div class="column2">
+		<dl class="details">
+			<dt>{L_TOTAL_TOPICS}:</dt><dd>{TOTAL_TOPICS}</dd>
+			<dt>{L_TOTAL_FORUMS}:</dt><dd>{TOTAL_FORUMS}</dd>
+			<dt>{L_TOTAL_POLLS}:</dt><dd>{TOTAL_POLLS}</dd>
+			<dt>{L_MOST_ONLINE}:</dt><dd>{MAX_USERS} ({L_ONLINE_ON} {MAX_USERS_DATE})</dd>
+		</dl>
+	</div><br style="clear: both;" />
 	<h3>{L_AVERAGES}</h3>
-	<table class="fs_details_list">
-		<tr>
-			<td class="col1">{L_AVG_POSTS_DAY}:</td><td class="col2">{AVG_POSTS_PER_DAY}</td>
-			<td class="col3">{L_AVG_TOPICS_DAY}:</td><td class="col4">{AVG_TOPICS_PER_DAY}</td>
-		</tr>		
-		<tr>
-			<td class="col1">{L_AVG_USER_REGS_DAY}:</td> <td class="col2">{AVG_REGS_PER_DAY}</td>
-			<td class="col3">{L_AVG_FILES_DAY}:</td> <td class="col4">{AVG_ATTACH_PER_DAY}</td>
-		</tr>		
-	</table><br />
+	<div class="column1">
+		<dl class="details">
+			<dt>{L_AVG_POSTS_DAY}:</dt><dd>{AVG_POSTS_PER_DAY}</dd>
+			<dt>{L_AVG_USER_REGS_DAY}:</dt><dd>{AVG_REGS_PER_DAY}</dd>
+			<dt>{L_AVG_POSTS_MONTH}:</dt><dd>{AVG_POSTS_PER_MONTH}</dd>
+		</dl>
+	</div>
+	<div class="column2">
+		<dl class="details">
+			<dt>{L_AVG_TOPICS_DAY}:</dt><dd>{AVG_TOPICS_PER_DAY}</dd>
+			<dt>{L_AVG_FILES_DAY}:</dt><dd>{AVG_ATTACH_PER_DAY}</dd>
+			<dt>{L_AVG_TOPICS_MONTH}:</dt><dd>{AVG_TOPICS_PER_MONTH}</dd>
+		</dl>
+	</div><br style="clear: both;" />
 	<h3>{L_FORUMS}</h3>
-	<table class="fs_details_list">
-		<tr>
-			<td class="col1">{L_TOTAL_FORUM_CAT}:</td> <td class="col2">{TOTAL_FORUM_CAT}</td>
-			<td class="col3">{L_TOTAL_FORUM_POST}:</td> <td class="col4">{TOTAL_FORUM_POST}</td>			
-		</tr>
-		<tr>
-			<td class="col1">{L_TOTAL_FORUM_LINK}:</td> <td class="col2">{TOTAL_FORUM_LINK}</td>
-		</tr>
-	</table><br />
+	<div class="column1">
+		<dl class="details">
+			<dt>{L_TOTAL_FORUM_CAT}:</dt><dd>{TOTAL_FORUM_CAT}</dd>
+			<dt>{L_TOTAL_FORUM_LINK}:</dt><dd>{TOTAL_FORUM_LINK}</dd>
+		</dl>
+	</div>
+	<div class="column2">
+		<dl class="details">
+			<dt>{L_TOTAL_FORUM_POST}:</dt><dd>{TOTAL_FORUM_POST}</dd>
+		</dl>
+	</div><br style="clear: both;" />
 	<h3>{L_TOPICS}</h3>
-	<table class="fs_details_list">
-		<tr>
-			<td class="col1">{L_TOPICS_NORMAL}:</td> <td class="col2">{TOTAL_POST_NORMAL}</td>
-			<td class="col3">{L_TOPICS_STICKY}:</td> <td class="col4">{TOTAL_POST_STICKY}</td>			
-		</tr>
-		<tr>
-			<td class="col1">{L_TOPICS_GLOBAL}:</td> <td class="col2">{TOTAL_POST_GLOBAL}</td>
-			<td class="col3">{L_TOPICS_ANNOUNCE}:</td> <td class="col4">{TOTAL_POST_ANNOUNCE}</td>			
-		</tr>
-		<tr>			
-			<td class="col1">{L_TOPICS_UNAPPROVED}:</td> <td class="col2">{UNAPPROVED_TOPICS}</td>
-			<td class="col3">{L_UNAPPROVED_POSTS}:</td> <td class="col4">{UNAPPROVED_POSTS}</td>
-		</tr>
-	</table><br />
+	<div class="column1">
+		<dl class="details">
+			<dt>{L_TOPICS_NORMAL}:</dt><dd>{TOTAL_POST_NORMAL}</dd>
+			<dt>{L_TOPICS_GLOBAL}:</dt><dd>{TOTAL_POST_GLOBAL}</dd>
+			<dt>{L_TOPICS_UNAPPROVED}:</dt><dd>{UNAPPROVED_TOPICS}</dd>
+		</dl>
+	</div>
+	<div class="column2">
+		<dl class="details">
+			<dt>{L_TOPICS_STICKY}:</dt><dd>{TOTAL_POST_STICKY}</dd>
+			<dt>{L_TOPICS_ANNOUNCE}:</dt><dd>{TOTAL_POST_ANNOUNCE}</dd>
+			<dt>{L_UNAPPROVED_POSTS}:</dt><dd>{UNAPPROVED_POSTS}</dd>
+		</dl>
+	</div><br style="clear: both;" />
 	<h3>{L_USERS}</h3>
-	<table class="fs_details_list">
-		<tr>
-			<td class="col1">{L_USERS_ACTIVE}:<br /><small>({USERS_ACTIVE_EXPLAIN})</small></td> <td class="col2">{USERS_ACTIVE}</td>
-			<td class="col3">{L_USERS_INACTIVE}:<br /><small>({USERS_INACTIVE_EXPLAIN})</small></td> <td class="col4">{USERS_INACTIVE}</td>
-		</tr>
-		<tr>
-			<td class="col1">{L_USERS_TOTAL_BOTS}:</td> <td class="col2">{REGISTERED_BOTS}</td>
-			<td class="col3">{L_USERS_VISITED_BOTS}:</td> <td class="col4">{VISITED_BOTS}</td>
-		</tr>
-	</table><br />
+	<div class="column1">
+		<dl class="details">
+			<dt>{L_USERS_ACTIVE}:<br /><small>({USERS_ACTIVE_EXPLAIN})</small></dt><dd>{USERS_ACTIVE}</dd>
+			<dt>{L_USERS_TOTAL_BOTS}:</dt><dd>{REGISTERED_BOTS}</dd>
+		</dl>
+	</div>
+	<div class="column2">
+		<dl class="details">
+			<dt>{L_USERS_INACTIVE}:<br /><small>({USERS_INACTIVE_EXPLAIN})</small></dt><dd>{USERS_INACTIVE}</dd>
+			<dt>{L_USERS_VISITED_BOTS}:</dt><dd>{VISITED_BOTS}</dd>
+		</dl>
+	</div><br style="clear: both;" />
 	<hr /><div style="text-align:right;"><span><i>{AS_ON}</i></span></div>
 	<span class="corners-bottom"><span></span></span></div>
 </div>
