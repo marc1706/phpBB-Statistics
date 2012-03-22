@@ -49,6 +49,7 @@ $stats = new phpbb_stats();
 // setup initial vars
 $p = request_var('p', 0);
 $id = request_var('id', 0);
+$view = request_var('view', '');
 
 // get modules
 $stats->obtain_modules();
@@ -124,6 +125,8 @@ $stats_template = $stats_module->get_stats();
 
 $template->assign_vars(array(
 	'TEMPLATE_FILE'		=> ($stats_template != false) ? 'stats/' . $stats_template : '',
+	'AS_ON'				=> sprintf($user->lang['AS_ON'], $user->format_date(time())),
+	'U_PRINT_TOPIC'		=> append_sid($stats->stats_link, 'p=' . $module['module_parent'] . '&amp;id=' . $module['module_id'] . '&amp;view=print'),
 ));
 
 // Now create the menu
@@ -131,11 +134,13 @@ $stats->parse_menu($module);
 
 $page_title = (isset($user->lang[$module['module_name']])) ? $user->lang[$module['module_name']] : $module['module_name'];
 
+$page_body = ($view == 'print') ? 'stats/stats_print.html' : 'stats/stats.html';
+
 // Output the page
 page_header($page_title, false);
 
 $template->set_filenames(array(
-	'body' => 'stats.html')
+	'body' => $page_body)
 );
 
 page_footer();

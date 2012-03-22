@@ -23,7 +23,7 @@ class phpbb_stats
 {
 	private $cache_time;
 	public $modules;
-	private $stats_link;
+	public $stats_link;
 
 	/**
 	* initialise variables for following actions
@@ -352,7 +352,7 @@ class phpbb_stats
 			$sql = 'SELECT COUNT(user_id) AS active_users 
 					FROM ' . USERS_TABLE . '
 					WHERE user_lastvisit >= ' . $last_visit_min . '
-					AND user_type = (' . USER_NORMAL . ' OR ' . USER_FOUNDER . ')';
+					AND ' . $db->sql_in_set('user_type', array(USER_NORMAL, USER_FOUNDER));
 			$result = $db->sql_query($sql);
 			$ret['active'] = $db->sql_fetchfield('active_users');
 			$ret['inactive'] = $config['num_users'] - $ret['active'];

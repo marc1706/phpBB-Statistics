@@ -83,7 +83,9 @@ class stats_basic_module
 			'UNAPPROVED_TOPICS'		=> $topic_types['unapproved'],
 			'UNAPPROVED_POSTS'		=> $stats->unapproved_posts(),
 			'ACTIVE_USERS'			=> $user_accounts_data['active'],
+			'ACTIVE_USERS_EXPLAIN'	=> sprintf($user->lang['USERS_ACTIVE_EXPLAIN'], 30),
 			'INACTIVE_USERS'		=> $user_accounts_data['inactive'],
+			'INACTIVE_USERS_EXPLAIN'=> sprintf($user->lang['USERS_INACTIVE_EXPLAIN'], 30),
 			'REGISTERED_BOTS'		=> $user_accounts_data['registered_bots'],
 			'VISITED_BOTS'			=> $user_accounts_data['visited_bots'],
 		));
