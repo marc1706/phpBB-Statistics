@@ -93,6 +93,116 @@ class phpbb_stats
 			return $ret;
 		}
 	}
+	
+	/**
+	* function get_time_string --- returns the formatted time string like 3 months 20 days etc.
+	* @param $time : the timestamp
+	* Copyright (c) TheUniqueTiger - Nayan Ghosh
+	*/
+	public function get_time_string($time, $current = 0)
+	{
+		global $user;
+		$time_ary = getdate($time);	
+		$current_time_ary = array();
+		$diff_ary = array(
+			'seconds' 			=> 0,
+			'minutes'			=> 0,
+			'hours'				=> 0,
+			'days'				=> 0,
+			'months'			=> 0,
+			'years'				=> 0
+		);
+		$decrement_ary = array(
+			'seconds' 			=> false,
+			'minutes'			=> false,
+			'hours'				=> false,
+			'days'				=> false,
+			'months'			=> false,
+			'years'				=> false
+		);
+		if (!$current)
+		{
+			$current = time();
+		}
+		$temp_time_ary = $time_ary;
+		if (isset($current)) //do subtraction and get the difference
+		{
+			$current_time_ary = getdate($current);
+			
+			//do seconds
+			$diff_ary['seconds'] = $current_time_ary['seconds'] - $time_ary['seconds'];
+			if ($diff_ary['seconds'] < 0)
+			{
+				$diff_ary['seconds'] = 60 + $diff_ary['seconds'];
+				$decrement_ary['minutes'] = true;
+			}
+			
+			//do minutes
+			$diff_ary['minutes'] = $current_time_ary['minutes'] - $time_ary['minutes'];
+			if (($decrement_ary['minutes']) == true)
+			{
+				--$diff_ary['minutes'];
+			}
+			if ($diff_ary['minutes'] < 0)
+			{
+				$diff_ary['minutes'] = 60 + $diff_ary['minutes'];
+				$decrement_ary['hours'] = true;
+			}
+			
+			//do hours
+			$diff_ary['hours'] = $current_time_ary['hours'] - $time_ary['hours'];
+			if (($decrement_ary['hours']) == true)
+			{
+				--$diff_ary['hours'];
+			}
+			if ($diff_ary['hours'] < 0)
+			{
+				$diff_ary['hours'] = 24 + $diff_ary['hours'];
+				$decrement_ary['days'] = true;
+			}
+			
+			//do days
+			$diff_ary['days'] = $current_time_ary['mday'] - $time_ary['mday'];
+			if (($decrement_ary['days'])  == true)
+			{
+				--$diff_ary['days'];
+			}
+			if ($diff_ary['days'] < 0)
+			{
+				$diff_ary['days'] = 30 + $diff_ary['days'];
+				$decrement_ary['months'] = true;
+			}
+			
+			//do months
+			$diff_ary['months'] = $current_time_ary['mon'] - $time_ary['mon'];
+			if (($decrement_ary['months']) == true)
+			{
+				--$diff_ary['months'];
+			}
+			if ($diff_ary['months'] < 0)
+			{
+				$diff_ary['months'] = 12 + $diff_ary['months'];
+				$decrement_ary['years'] = true;
+			}
+			
+			//do years
+			$diff_ary['years'] = $current_time_ary['year'] - $time_ary['year'];
+			if (($decrement_ary['years'])  == true)
+			{
+				--$diff_ary['years'];
+			}
+			
+		}
+		$result = '';	
+		$result .= (isset($diff_ary['years'])) ? $diff_ary['years'] . ' ' . (($diff_ary['years'] > 1) ? $user->lang['YEARS'] . ' ' : $user->lang['YEAR'] . ' ') : '';
+		$result .= (isset($diff_ary['months'])) ? $diff_ary['months'] . ' ' . (($diff_ary['months'] > 1) ? $user->lang['MONTHS'] . ' ' : $user->lang['MONTH'] . ' ') : '';
+		$result .= (isset($diff_ary['days'])) ? $diff_ary['days'] . ' ' . (($diff_ary['days'] > 1) ? $user->lang['DAYS'] . ' ' : $user->lang['DAY'] . ' ') : '';
+		$result .= (isset($diff_ary['hours'])) ? $diff_ary['hours'] . ' ' . (($diff_ary['hours'] > 1) ? $user->lang['HOURS'] . ' ' : $user->lang['HOUR'] . ' ') : '';
+		$result .= (isset($diff_ary['minutes'])) ? $diff_ary['minutes'] . ' ' . (($diff_ary['minutes'] > 1) ? $user->lang['MINUTES'] . ' ' : $user->lang['MINUTE'] . ' ') : '';
+		$result .= (isset($diff_ary['seconds'])) ? $diff_ary['seconds'] . ' ' . (($diff_ary['seconds'] > 1) ? $user->lang['SECONDS'] . ' ' : $user->lang['SECOND'] . ' ') : '';
+		
+		return $result;
+	}
 
 	/**
 	* grab all stats modules from the database
@@ -211,28 +321,6 @@ class phpbb_stats
 		{
 			return $ret;
 		}
-	}
-
-	/**
-	* get the total number of attachments
-	*/
-	public function total_attachments()
-	{
-		global $db, $cache;
-		
-		$ret = $cache->get('total_attachments');
-		if ($ret === false)
-		{
-			$sql = 'SELECT COUNT(attach_id) AS total_attachments
-					FROM ' . ATTACHMENTS_TABLE;
-			$result = $db->sql_query($sql);
-			$ret = $db->sql_fetchfield('total_attachments');
-			$db->sql_freeresult($result);
-			
-			$cache->put('total_attachments', $ret, $this->cache_time);
-		}
-		
-		return $ret;
 	}
 
 	/**

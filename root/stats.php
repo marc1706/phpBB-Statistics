@@ -127,6 +127,7 @@ $template->assign_vars(array(
 	'TEMPLATE_FILE'		=> ($stats_template != false) ? 'stats/' . $stats_template : '',
 	'AS_ON'				=> sprintf($user->lang['AS_ON'], $user->format_date(time())),
 	'U_PRINT_TOPIC'		=> append_sid($stats->stats_link, 'p=' . $module['module_parent'] . '&amp;id=' . $module['module_id'] . '&amp;view=print'),
+	'L_TITLE'			=> (isset($user->lang[$module['module_name']])) ? $user->lang[$module['module_name']] : $module['module_name'],
 ));
 
 // Now create the menu

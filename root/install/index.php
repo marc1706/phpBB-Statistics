@@ -240,6 +240,7 @@ $versions = array(
 		'config_add' => array(
 			array('stats_enable', '1', 0),
 			array('stats_advanced_pretend_version', '1', 0),
+			array('stats_advanced_security', '0', 0),
 			array('stats_miscellaneous_hide_warnings', '1', 0),
 			array('stats_activity_users_hide_anonymous', '1', 0),
 			array('stats_resync', '1', 0),

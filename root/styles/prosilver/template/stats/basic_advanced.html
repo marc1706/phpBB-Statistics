@@ -1,0 +1,68 @@
+<!-- copyright (c) 2012 Marc Alexander(marc1706) www.m-a-styles.de //-->
+<div class="panel" id="stats">
+	<div class="inner"><span class="corners-top"><span></span></span>
+	<h3>{L_BOARD_BACKGROUND}</h3>
+	<div class="column1">
+		<dl class="details">
+			<dt>{L_START_DATE}:</dt><dd>{BOARD_STARTDATE}</dd>
+			<dt>{L_BOARD_VERSION}:</dt><dd><!-- IF not S_HIDE_BOARD_VERSION -->{BOARD_VERSION}<!-- ELSE IF $S_HIDE_BOARD_VERSION -->{L_BOARD_VERSION_SECURE}<!-- ENDIF --></dd>
+		</dl>
+	</div>
+	<div class="column2">
+		<dl class="details">
+			<dt>{L_BOARD_AGE}:</dt><dd>{BOARD_AGE}</dd>
+			<dt>{L_GZIP_COMPRESSION}:</dt><dd>{GZIP_COMPRESSION}</dd>
+		</dl>
+	</div><br style="clear: both;" />
+	<!-- IF not S_HIDE_DATABASE_INFO -->
+	<h3>{L_DATABASE}</h3>
+	<div class="column1">
+		<dl class="details">
+			<dt>{L_DATABASE_INFO}:</dt><dd>{DATABASE_INFO}</dd>
+		</dl>
+	</div>
+	<div class="column2">
+		<dl class="details">
+			<dt>{L_DATABASE_SIZE}:</dt><dd>{DATABASE_SIZE}</dd>
+		</dl>
+	</div><br style="clear: both;" />
+	<!-- ENDIF -->
+	<h3>{L_FILESYSTEM}</h3>
+	<div class="column1">
+		<dl class="details">
+			<dt>{L_TOTAL_ATTACHMENTS}:</dt><dd>{TOTAL_ATTACHMENTS}</dd>
+			<dt>{L_TOTAL_AVATARS}:</dt><dd>{TOTAL_AVATARS}</dd>
+			<dt>{L_TOTAL_CACHED_FILES}:</dt><dd>{TOTAL_CACHED_FILES}</dd>
+		</dl>
+	</div>
+	<div class="column2">
+		<dl class="details">
+			<dt>{L_ATTACHMENTS_SIZE}:</dt><dd>{TOTAL_ATTACHMENTS_SIZE}</dd>
+			<dt>{L_TOTAL_AVATARS_SIZE}:</dt><dd>{TOTAL_AVATARS_SIZE}</dd>
+			<dt>{L_CACHED_FILES_SIZE}:</dt><dd>{CACHED_FILES_SIZE}</dd>
+		</dl>
+	</div><br style="clear: both;" />
+	<h3>{L_INSTALLED_COMPONENTS}</h3>
+	<div class="column1">
+		<dl class="details">
+			<dt>{L_STYLES}:</dt>
+			<dd>
+				<!-- BEGIN styles_row -->
+					<i>{styles_row.NAME}</i><br />-&nbsp;{styles_row.COPYRIGHT}<br />
+				<!-- END styles_row -->
+			</dd>
+		</dl>
+	</div>
+	<div class="column2">
+		<dl class="details">
+			<dt>{L_IMAGESETS}:</dt>
+			<dd>
+				<!-- BEGIN imagesets_row -->
+					<i>{imagesets_row.NAME}</i><br />-&nbsp;{imagesets_row.COPYRIGHT}<br />
+				<!-- END imagesets_row -->
+			</dd>
+		</dl>
+	</div><br style="clear: both;" />
+	<hr /><div style="text-align:right;"><span><i>{AS_ON}</i></span></div>
+	<span class="corners-bottom"><span></span></span></div>
+</div>
