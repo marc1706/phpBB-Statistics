@@ -15,7 +15,7 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-class stats_basic_module
+class stats_basic_basic_module
 {
 	/**
 	* Default modulename

@@ -126,7 +126,7 @@ class phpbb_stats
 	*/
 	public function parse_menu($module)
 	{
-		global $template;
+		global $template, $user;
 
 		if (!is_array($module))
 		{
@@ -146,7 +146,7 @@ class phpbb_stats
 				));
 			}
 			// and we have a sub-module
-			else
+			elseif ($cur_module['module_parent'] == $module['module_parent'])
 			{
 				$template->assign_block_vars('t_block2', array(
 					'U_TITLE'		=> append_sid($this->stats_link, 'p=' . $cur_module['module_parent'] . '&amp;id=' . $cur_module['module_id']),
