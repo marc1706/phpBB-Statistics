@@ -37,6 +37,29 @@ class stats_basic_advanced_module
 	{
 		global $db, $config, $template, $stats, $user, $phpbb_root_path, $phpEx;
 		
+		// find out if we need to sort installed components in a different way
+		$sort_by = request_var('sort', 'id');
+		
+		switch ($sort_by)
+		{
+			case 'id':
+				$lang_sort_by = 'id';
+				$order_by = 'ABS';
+			break;
+			case 'name':
+				$lang_sort_by = 'local_name';
+				$order_by = 'LOWER';
+			break;
+			case 'copyright':
+				$lang_sort_by = 'author';
+				$order_by = 'LOWER';
+			break;
+			default:
+				$lang_sort_by = 'id';
+				$sort_by = 'id';
+				$order_by = 'LOWER';
+		}
+		
 		/** 
 		* Get total stats from config
 		*/
@@ -137,7 +160,7 @@ class stats_basic_advanced_module
 		// get all styles from the database @todo: cache this
 		$sql = 'SELECT style_name AS name, style_copyright AS copyright, style_id
 				FROM ' . STYLES_TABLE . '
-				ORDER BY style_id ASC';
+				ORDER BY ' . $order_by . '(style_' . $sort_by . ') ASC';
 		$result = $db->sql_query($sql);
 		while ($row = $db->sql_fetchrow($result))
 		{
@@ -151,7 +174,7 @@ class stats_basic_advanced_module
 		// get all imagesets from the database @todo: cache this
 		$sql = 'SELECT imageset_name AS name, imageset_copyright AS copyright, imageset_id
 				FROM ' . STYLES_IMAGESET_TABLE . '
-				ORDER BY imageset_id ASC';
+				ORDER BY ' . $order_by . '(imageset_' . $sort_by . ') ASC';
 		$result = $db->sql_query($sql);
 		while ($row = $db->sql_fetchrow($result))
 		{
@@ -161,6 +184,58 @@ class stats_basic_advanced_module
 			));
 		}
 		$db->sql_freeresult($result);
+		
+		// get all templates from the database @todo: cache this
+		$sql = 'SELECT template_name AS name, template_copyright AS copyright, template_id
+				FROM ' . STYLES_TEMPLATE_TABLE . '
+				ORDER BY ' . $order_by . '(template_' . $sort_by . ') ASC';
+		$result = $db->sql_query($sql);
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$template->assign_block_vars('templates_row', array(
+				'NAME'		=> $row['name'],
+				'COPYRIGHT'	=> $row['copyright'],
+			));
+		}
+		$db->sql_freeresult($result);
+		
+		// get all themes from the database @todo: cache this
+		$sql = 'SELECT theme_name AS name, theme_copyright AS copyright, theme_id
+				FROM ' . STYLES_THEME_TABLE . '
+				ORDER BY ' . $order_by . '(theme_' . $sort_by . ') ASC';
+		$result = $db->sql_query($sql);
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$template->assign_block_vars('themes_row', array(
+				'NAME'		=> $row['name'],
+				'COPYRIGHT'	=> $row['copyright'],
+			));
+		}
+		$db->sql_freeresult($result);
+		
+		// get all language packs from the database @todo: cache this
+		$sql = 'SELECT lang_local_name AS name, lang_author AS copyright, lang_iso AS iso, lang_id
+				FROM ' . LANG_TABLE . '
+				ORDER BY ' . $order_by . '(lang_' . $lang_sort_by . ') ASC';
+		$result = $db->sql_query($sql);
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$template->assign_block_vars('lang_packs_row', array(
+				'NAME'		=> $row['name'],
+				'COPYRIGHT'	=> $row['copyright'],
+				'ISO'		=> $row['iso'],
+			));
+		}
+		$db->sql_freeresult($result);
+		
+		// create sort by drop-down list
+		$options = array(
+			'id'		=> $user->lang['COMPONENTS_ID'],
+			'name'		=> $user->lang['COMPONENTS_NAME'],
+			'copyright'	=> $user->lang['COMPONENTS_AUTHOR'],
+		);
+		
+		$stats->create_sort_by($options, 'sort_by_row', $sort_by);
 		
 		$template->assign_vars(array(
 			'BOARD_STARTDATE'			=> $board_startdate,
@@ -175,8 +250,6 @@ class stats_basic_advanced_module
 			'TOTAL_AVATARS_SIZE'		=> $avatar_dir_size,
 			'TOTAL_CACHED_FILES'		=> $total_cached_files,
 			'CACHED_FILES_SIZE'			=> $cache_dir_size,
-			
-			
 		));
 		
 		return 'basic_advanced.html';

@@ -63,6 +63,50 @@
 			</dd>
 		</dl>
 	</div><br style="clear: both;" />
+	<div class="column1">
+		<dl class="details">
+			<dt>{L_TEMPLATES}:</dt>
+			<dd>
+				<!-- BEGIN templates_row -->
+					<i>{templates_row.NAME}</i><br />-&nbsp;{templates_row.COPYRIGHT}<br />
+				<!-- END templates_row -->
+			</dd>
+		</dl>
+	</div>
+	<div class="column2">
+		<dl class="details">
+			<dt>{L_THEMES}:</dt>
+			<dd>
+				<!-- BEGIN themes_row -->
+					<i>{themes_row.NAME}</i><br />-&nbsp;{themes_row.COPYRIGHT}<br />
+				<!-- END themes_row -->
+			</dd>
+		</dl>
+	</div><br style="clear: both;" />
+	<div class="column1">
+		<dl class="details">
+			<dt>{L_LANG_PACKS}:</dt>
+			<dd>
+				<!-- BEGIN lang_packs_row -->
+					<i>{lang_packs_row.NAME}</i> ({lang_packs_row.ISO})<br />-&nbsp;{L_BY} {lang_packs_row.COPYRIGHT}<br />
+				<!-- END lang_packs_row -->
+			</dd>
+		</dl>
+	</div><br style="clear: both;" />
+	<div class="sort_by">
+		<form id="sort_by" action="{U_ACTION}" method="post">
+			<div>
+				<hr />
+				<label for="sort">{L_SORT_BY_PROMPT}:</label>
+				<select id="sort" name="sort">
+					<!-- BEGIN sort_by_row -->
+						<option <!-- IF sort_by_row.S_IS_SELECTED -->selected="selected" <!-- ENDIF -->value="{sort_by_row.VALUE}">{sort_by_row.NAME}</option>
+					<!-- END sort_by_row -->
+				</select>
+				<input type="submit" class="button1" value="{L_GO}" name="submit" />
+			</div>
+		</form>
+	</div>
 	<hr /><div style="text-align:right;"><span><i>{AS_ON}</i></span></div>
 	<span class="corners-bottom"><span></span></span></div>
 </div>

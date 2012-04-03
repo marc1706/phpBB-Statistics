@@ -45,6 +45,37 @@ class phpbb_stats
 	*
 	*/
 	
+	/** create sort by drop-down box from specified options
+	*
+	* param $options (array): holds the options data
+	*	the options array needs to have the following structure:
+	*	array => (
+	*		'option1_value' => 'option1_name',
+	*	)
+	*
+	* param $tpl_row (string): the name of the template row this should be assigned to
+	* param $selected (string): the value of the currently selected option
+	*
+	*/
+	public function create_sort_by($options = array(), $tpl_row = 'sort_by_row', $selected = '')
+	{
+		global $template;
+		
+		if (empty($options))
+		{
+			return;
+		}
+		
+		foreach ($options as $value => $name)
+		{
+			$template->assign_block_vars($tpl_row, array(
+				'S_IS_SELECTED'		=> ($value == $selected) ? true : false,
+				'VALUE'				=> $value,
+				'NAME'				=> $name,
+			));
+		}
+	}
+	
 	/**
 	* get the count of each forum type
 	*

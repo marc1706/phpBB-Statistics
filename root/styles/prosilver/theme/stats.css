@@ -34,5 +34,7 @@
 	font-size: 0.9em;
 }
 
-
-/*END MOD*/
+#stats .sort_by {
+	text-align: center;
+	width: 100%;
+}
