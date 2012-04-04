@@ -99,6 +99,12 @@ class stats_basic_advanced_module
 		{
 			// Displays the exact version number, database info and database size
 			$board_version = $config['version'];
+
+			//get and display advanced statistics
+			if(!function_exists('recalc_nested_sets'))
+			{
+				include ("{$phpbb_root_path}includes/functions_admin.$phpEx"); //for database size
+			}
 		}
 		else
 		{

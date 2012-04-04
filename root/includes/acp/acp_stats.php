@@ -20,15 +20,17 @@ class acp_stats
 	function main($id, $mode)
 	{
 		global $db, $user, $template;
-		global $config, $stats_config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
-		
-		define('IN_STATS_MOD', true);
+		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
 
 		include($phpbb_root_path . 'stats/includes/functions.' . $phpEx);
 		
-		$stats_config = obtain_stats_config();
+		/**
+		* load $stats class and globalize it
+		*/
+		global $stats;
+		$stats = new phpbb_stats();
 
-		$user->add_lang('mods/lang_stats_acp');
+		//$user->add_lang('mods/lang_stats_acp');
 		$user->add_lang('mods/stats');
 
 		$action = request_var('action', '');
@@ -250,7 +252,7 @@ class acp_stats
 			}
 		}
 		
-		$this->new_config = $stats_config;
+		$this->new_config = $config;
 
 		/**
 		*	Validation types are:
@@ -260,30 +262,18 @@ class acp_stats
 		*/
 		switch ($mode)
 		{
+		// @todo: split into module dependent settings, which is better for extra features
 			case 'settings':
 				$display_vars = array(
 					'title'	=> 'ACP_STATS_GENERAL_INFO',
 					'vars'	=> array(
 						'legend1'							=> 'ACP_STATS_GENERAL_SETTINGS',
 						'stats_enable'						=> array('lang' => 'ACP_STATS_ENABLE'	, 'validate' => 'bool'	, 'type' => 'radio:yes_no'	, 'explain' => true),
-						'basic_basic_enable'				=> array('lang' => 'ACP_BASIC_BASIC_ENABLE'  , 'validate' => 'bool'  , 'type' => 'radio:yes_no'  , 'explain' => true),
-						'basic_advanced_enable'				=> array('lang' => 'ACP_BASIC_ADVANCED_ENABLE'  , 'validate' => 'bool'  , 'type' => 'radio:yes_no'  , 'explain' => true),
-						'basic_miscellaneous_enable'		=> array('lang' => 'ACP_BASIC_MISCELLANEOUS_ENABLE'  , 'validate' => 'bool'  , 'type' => 'radio:yes_no'  , 'explain' => true),
-						'activity_forums_enable'			=> array('lang' => 'ACP_ACTIVITY_FORUMS_ENABLE'  , 'validate' => 'bool'  , 'type' => 'radio:yes_no'  , 'explain' => true),
-						'activity_topics_enable'			=> array('lang' => 'ACP_ACTIVITY_TOPICS_ENABLE'  , 'validate' => 'bool'  , 'type' => 'radio:yes_no'  , 'explain' => true),
-						'activity_users_enable'				=> array('lang' => 'ACP_ACTIVITY_USERS_ENABLE'  , 'validate' => 'bool'  , 'type' => 'radio:yes_no'  , 'explain' => true),
-						'contributions_attachments_enable'	=> array('lang' => 'ACP_CONTRIBUTIONS_ATTACHMENTS_ENABLE'  , 'validate' => 'bool'  , 'type' => 'radio:yes_no'  , 'explain' => true),
-						'contributions_polls_enable'		=> array('lang' => 'ACP_CONTRIBUTIONS_POLLS_ENABLE'  , 'validate' => 'bool'  , 'type' => 'radio:yes_no'  , 'explain' => true),
-						'periodic_daily_enable'				=> array('lang' => 'ACP_PERIODIC_DAILY_ENABLE'  , 'validate' => 'bool'  , 'type' => 'radio:yes_no'  , 'explain' => true),
-						'periodic_monthly_enable'			=> array('lang' => 'ACP_PERIODIC_MONTHLY_ENABLE'  , 'validate' => 'bool'  , 'type' => 'radio:yes_no'  , 'explain' => true),
-						'periodic_hourly_enable'			=> array('lang' => 'ACP_PERIODIC_HOURLY_ENABLE'  , 'validate' => 'bool'  , 'type' => 'radio:yes_no'  , 'explain' => true),
-						'settings_board_enable'				=> array('lang' => 'ACP_SETTINGS_BOARD_ENABLE'  , 'validate' => 'bool'  , 'type' => 'radio:yes_no'  , 'explain' => true),
-						'settings_profile_enable'			=> array('lang' => 'ACP_SETTINGS_PROFILE_ENABLE'  , 'validate' => 'bool'  , 'type' => 'radio:yes_no'  , 'explain' => true),
-						'resync_stats'						=> array('lang' => 'ACP_STATS_RESYNC_TIMEFRAME', 'validate' => 'int', 'type' => 'text:2:2', 'explain' => true),
+						'stats_cache_time'					=> array('lang' => 'ACP_STATS_CACHE_TIME', 'validate' => 'int', 'type' => 'text:2:2', 'explain' => true),
 						
 						'legend2'							=> 'ACP_BASIC_ADVANCED_SETTINGS',
-						'basic_advanced_security'			=> array('lang' => 'ACP_BASIC_ADVANCED_SECURITY'  , 'validate' => 'bool'  , 'type' => 'radio:yes_no'  , 'explain' => true),
-						'basic_advanced_pretend_version'	=> array('lang' => 'ACP_BASIC_ADVANCED_PRETEND'  , 'validate' => 'bool'  , 'type' => 'radio:yes_no'  , 'explain' => true),
+						'stats_advanced_security'			=> array('lang' => 'ACP_BASIC_ADVANCED_SECURITY'  , 'validate' => 'bool'  , 'type' => 'radio:yes_no'  , 'explain' => true),
+						'stats_advanced_pretend_version'	=> array('lang' => 'ACP_BASIC_ADVANCED_PRETEND'  , 'validate' => 'bool'  , 'type' => 'radio:yes_no'  , 'explain' => true),
 						
 						'legend3'							=> 'ACP_BASIC_MISCELLANEOUS_SETTINGS',
 						'basic_miscellaneous_hide_warnings'	=> array('lang' => 'ACP_BASIC_MISCELLANEOUS_WARNINGS'  , 'validate' => 'bool'  , 'type' => 'radio:yes_no'  , 'explain' => true),
@@ -339,7 +329,7 @@ class acp_stats
 
 				if ($submit)
 				{
-					set_stats_config($config_name, $config_value);
+					set_config($config_name, $config_value);
 				}
 			}
 		}
@@ -363,7 +353,7 @@ class acp_stats
 
 			$title_explain = $user->lang[$display_vars['title'] . '_EXPLAIN'];
 
-			$title_explain .= ( $display_vars['title'] == 'ACP_STATS_GENERAL_INFO' ) ? '<br /><br />' . sprintf($user->lang['ACP_STATS_VERSION'], $stats_config['stats_version']) : '';
+			$title_explain .= ( $display_vars['title'] == 'ACP_STATS_GENERAL_INFO' ) ? '<br /><br />' . sprintf($user->lang['ACP_STATS_VERSION'], $config['phpbb_statistics_version']) : '';
 			
 			$template->assign_vars(array(
 				'L_TITLE'			=> $user->lang[$display_vars['title']],

@@ -251,7 +251,7 @@ $versions = array(
 		'module_add' => array(
 			array('acp', 'ACP_CAT_DOT_MODS', 'ACP_STATS'),
 			
-			array('acp', 'ACP_STATS', array(
+			array('acp', 'ACP_STATS_INFO', array(
 				
 					'module_basename'	=> 'stats',
 					'module_langname'	=> 'ACP_STATS_GENERAL_INFO',
