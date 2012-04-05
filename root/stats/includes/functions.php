@@ -24,6 +24,7 @@ class phpbb_stats
 	private $cache_time;
 	public $modules;
 	public $stats_link;
+	public $u_action;
 
 	/**
 	* initialise variables for following actions
@@ -37,6 +38,9 @@ class phpbb_stats
 		
 		// append_sid will be run later
 		$this->stats_link = $phpbb_root_path . 'stats.' . $phpEx;
+		
+		// this should be overwritten by stats.php and is just a fallback for other mods
+		$this->u_action = append_sid($this->stats_link);
 	}
 	
 	/**
@@ -299,6 +303,50 @@ class phpbb_stats
 	}
 	
 	/**
+	* get the number of smilies installed on the board 
+	*
+	* param $type (string): decide which data to return
+	*/
+	public function smiley_count($type = '')
+	{
+		global $db, $cache;
+	
+		$ret = $cache->get('stats_smiley_count');
+		
+		if ($ret === false)
+		{
+			$ret = array(
+				'total' => 0,
+				'dop'	=> 0, // display on posting
+			);
+
+			$sql = 'SELECT DISTINCT(smiley_url) AS count, display_on_posting AS dop
+					FROM ' . SMILIES_TABLE;
+			$result = $db->sql_query($sql);
+			while($row = $db->sql_fetchrow($result))
+			{
+				++$ret['total'];
+				if($row['dop'])
+				{
+					++$ret['dop'];
+				}
+			}
+			$db->sql_freeresult($result);
+
+			$cache->put('stats_smiley_count', $ret, $this->cache_time);
+		}
+		
+		if (!empty($type) && isset($ret[$type]))
+		{
+			return $ret[$type];
+		}
+		else
+		{
+			return $ret;
+		}
+	}
+	
+	/**
 	* get the count of each topic type
 	*
 	* param $type (string):	choose wether you want the whole array or just one topic type
@@ -353,6 +401,105 @@ class phpbb_stats
 			return $ret;
 		}
 	}
+	
+	/**
+	* get top smilies by count
+	*
+	* Copyright (c) 2009 - 2012 Marc Alexander(marc1706) www.m-a-styles.de
+	*
+	* param $limit (int): the top xx smilies that should be returned
+	*/
+	public function top_smilies($type = '', $limit = 0)
+	{
+		global $db, $phpbb_root_path, $phpEx, $cache;
+		
+		$post_ary = $matches = $smilies = array();
+		
+		$update = request_var('update', false);
+		
+		$ret = $cache->get('stats_top_smilies');
+		
+		if ($ret === false)
+		{
+			// Now we also need some Smiley information
+			$sql = 'SELECT DISTINCT(smiley_url) AS url, emotion AS emotion
+					FROM ' . SMILIES_TABLE;
+			$result = $db->sql_query($sql);
+			while ($row = $db->sql_fetchrow($result))
+			{
+				if(!isset($smilies[$row['url']]))
+				{
+					$smilies[$row['url']] = array(
+						'count'		=> 0,
+						'emotion'	=> $row['emotion'],
+					);
+				}
+			}
+			$db->sql_freeresult($result);
+			
+			$update = true;
+		}
+		else
+		{
+			$smilies = $ret;
+		}
+		
+		if ($update)
+		{
+			$start = request_var('start', 0);
+
+			//	first we have to get all posts from the database
+			$sql = 'SELECT post_text 
+					FROM ' . POSTS_TABLE . '
+					ORDER BY post_id ASC';
+			$result = $db->sql_query_limit($sql, 500, $start);
+			$affected_rows = $db->sql_affectedrows();
+			while ($row = $db->sql_fetchrow($result))
+			{	
+				$text = $row['post_text'];
+				
+				/**
+				* strip the smilies
+				* unfortunately, we can't use preg_match_all anymore, since that stupid function also gets inline attachments
+				*/
+				foreach($smilies as $key => $data)
+				{
+					$smilies[$key]['count'] = $smilies[$key]['count'] + ((strlen($text) - strlen(str_replace($key, '', $text))) / strlen($key));	
+				}
+			}			
+			$db->sql_freeresult($result);
+			
+			// put the smilies data into an array
+			if (!empty($smilies))
+			{
+				arsort($smilies);
+			}
+			$cache->put('stats_top_smilies', $smilies, $this->cache_time);
+			
+			if($affected_rows == 500) // set this to the limit number of the post_text sql query
+			{
+				$url = $this->u_action . '&amp;update=1&amp;start=' . ($start + 500); // add the limit number to $start
+				meta_refresh(5, $url); // time is set to 5 seconds -- that should be enough for 5000 posts
+				return false; // Tell the install script that we need a refresh
+			}
+		}
+		
+		if (empty($type))
+		{
+			return array_slice($smilies, 0, $limit, true);
+		}
+		else // currently also return the total smiley count
+		{
+			$total_count = 0;
+			foreach ($smilies as $count)
+			{
+				++$total_count;
+			}
+			
+			return $total_count;
+		}
+	}
+
 
 	/**
 	* get the total number of forums

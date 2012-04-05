@@ -121,14 +121,16 @@ if (!class_exists($class_name))
 
 $stats_module = new $class_name();
 
+$stats->u_action = append_sid($stats->stats_link, 'p=' . $module['module_parent'] . '&amp;id=' . $module['module_id']);
+
 $stats_template = $stats_module->get_stats();
 
 $template->assign_vars(array(
 	'TEMPLATE_FILE'		=> ($stats_template != false) ? 'stats/' . $stats_template : '',
 	'AS_ON'				=> sprintf($user->lang['AS_ON'], $user->format_date(time())),
-	'U_PRINT_TOPIC'		=> append_sid($stats->stats_link, 'p=' . $module['module_parent'] . '&amp;id=' . $module['module_id'] . '&amp;view=print'),
+	'U_PRINT_TOPIC'		=> $stats->u_action . '&amp;view=print',
 	'L_TITLE'			=> (isset($user->lang[$module['module_name']])) ? $user->lang[$module['module_name']] : $module['module_name'],
-	'U_ACTION'			=> append_sid($stats->stats_link, 'p=' . $module['module_parent'] . '&amp;id=' . $module['module_id']),
+	'U_ACTION'			=> $stats->u_action,
 ));
 
 // Now create the menu
