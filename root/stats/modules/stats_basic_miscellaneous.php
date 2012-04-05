@@ -74,10 +74,10 @@ class stats_basic_miscellaneous_module
 			}
 			if ($total_smiley_count > 0 && $config['num_posts'] && isset($max_count))
 			{
-				foreach ($top_smilies as $url => $current_smiley)
+				foreach ($top_smilies as $current_smiley)
 				{
 					$template->assign_block_vars('top_smilies_row', array(
-						'SMILEY'					=> '<img src="' . $phpbb_root_path. '/images/smilies/' . $url . '" alt="' . $current_smiley['emotion'] . '" title="' . $current_smiley['emotion'] . '" />',
+						'SMILEY'					=> '<img src="' . $phpbb_root_path. '/images/smilies/' . $current_smiley['url'] . '" alt="' . $current_smiley['emotion'] . '" title="' . $current_smiley['emotion'] . '" />',
 						'COUNT'						=> $current_smiley['count'],
 						'PCT'						=> number_format($current_smiley['count'] / $total_smiley_count * 100, 2),
 						'BARWIDTH'					=> number_format($current_smiley['count'] / $max_count * 100, 1),

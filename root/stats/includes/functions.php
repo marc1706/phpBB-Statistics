@@ -413,7 +413,7 @@ class phpbb_stats
 	{
 		global $db, $phpbb_root_path, $phpEx, $cache;
 		
-		$post_ary = $matches = $smilies = array();
+		$post_ary = $smilies = array();
 		
 		$update = request_var('update', false);
 		
@@ -429,7 +429,8 @@ class phpbb_stats
 			{
 				if(!isset($smilies[$row['url']]))
 				{
-					$smilies[$row['url']] = array(
+					$smilies[] = array(
+						'url'		=> $row['url'],
 						'count'		=> 0,
 						'emotion'	=> $row['emotion'],
 					);
@@ -452,7 +453,7 @@ class phpbb_stats
 			$sql = 'SELECT post_text 
 					FROM ' . POSTS_TABLE . '
 					ORDER BY post_id ASC';
-			$result = $db->sql_query_limit($sql, 500, $start);
+			$result = $db->sql_query_limit($sql, 5000, $start);
 			$affected_rows = $db->sql_affectedrows();
 			while ($row = $db->sql_fetchrow($result))
 			{	
@@ -464,7 +465,7 @@ class phpbb_stats
 				*/
 				foreach($smilies as $key => $data)
 				{
-					$smilies[$key]['count'] = $smilies[$key]['count'] + ((strlen($text) - strlen(str_replace($key, '', $text))) / strlen($key));	
+					$smilies[$key]['count'] = $data['count'] + ((strlen($text) - strlen(str_replace($data['url'], '', $text))) / strlen($data['url']));	
 				}
 			}			
 			$db->sql_freeresult($result);
@@ -472,15 +473,22 @@ class phpbb_stats
 			// put the smilies data into an array
 			if (!empty($smilies))
 			{
-				arsort($smilies);
+				$count_ary = $url_ary = $emotion_ary = array();
+				foreach ($smilies as $key => $cur)
+				{
+					$count_ary[$key] = $cur['count'];
+					$url_ary[$key] = $cur['url'];
+					$emotion_ary[$key] = $cur['emotion'];
+				}
+				array_multisort($count_ary, SORT_DESC, $smilies);
 			}
 			$cache->put('stats_top_smilies', $smilies, $this->cache_time);
 			
-			if($affected_rows == 500) // set this to the limit number of the post_text sql query
+			if($affected_rows == 5000) // set this to the limit number of the post_text sql query
 			{
-				$url = $this->u_action . '&amp;update=1&amp;start=' . ($start + 500); // add the limit number to $start
+				$url = $this->u_action . '&amp;update=1&amp;start=' . ($start + 5000); // add the limit number to $start
 				meta_refresh(5, $url); // time is set to 5 seconds -- that should be enough for 5000 posts
-				return false; // Tell the install script that we need a refresh
+				return false; // Tell script that we need a refresh
 			}
 		}
 		
@@ -491,9 +499,9 @@ class phpbb_stats
 		else // currently also return the total smiley count
 		{
 			$total_count = 0;
-			foreach ($smilies as $count)
+			foreach ($smilies as $data)
 			{
-				++$total_count;
+				$total_count = $total_count + $data['count'];
 			}
 			
 			return $total_count;

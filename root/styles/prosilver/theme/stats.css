@@ -38,3 +38,56 @@
 	text-align: center;
 	width: 100%;
 }
+
+#stats .graph {
+	background-color: #67A3EB;
+}
+
+ul.stats_graph {
+	display: block;
+    list-style-type: none;
+    margin: 0;
+}
+
+ul.stats_graph li {
+	display: block;
+	margin: 0;
+	overflow: hidden;
+}
+
+ul.stats_graph dt {
+	width: 48%;
+	float: left;
+}
+
+ul.stats_graph li.header dd {
+	font-weight: bold;
+}
+
+ul.stats_graph dd.bar {
+	display: block;
+	float: left;
+	width: 30%;
+}
+
+ul.stats_graph dd.count {
+	display: block;
+	float: left;
+	width: 10%;
+	text-align: center;
+}
+
+ul.stats_graph dd.percent {
+	display: block;
+	float: left;
+	width: 9%;
+	text-align: center;
+}
+
+.stats_data {
+	padding-left: 4px;
+}
+
+.stats_graph dd {
+	padding: 0 4px;
+}
