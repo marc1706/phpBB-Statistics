@@ -130,7 +130,7 @@ $lang = array_merge($lang, array(
 	'COMPONENTS_NAME'					=> 'Name',
 	'COMPONENTS_ID'						=> 'ID',
 	'COMPONENTS_AUTHOR'					=> 'Copyright/Author',
-	'RECOUNT_PROGRESS'					=> '<br />%1$d of %2$d posts have been processed. Please wait until the script has finished.<br /><br />',
+	'RECOUNT_PROGRESS'					=> 'Counting the number of %1$s.<br />%2$d of %3$d posts have been processed. Please wait until the script has finished.<br /><br />',
 	
 	//activity - forums
 	'COUNT'								=> 'Count',

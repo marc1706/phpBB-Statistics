@@ -17,7 +17,7 @@
 		<li class="header">
 			<dl>
 				<dt>{L_SMILEY}</dt>
-				<dd class="bar"></dd>
+				<dd class="bar">&nbsp;</dd>
 				<dd class="count">{L_COUNT}</dd>
 				<dd class="percent">{L_PERCENT}</dd>
 			</dl>
@@ -33,6 +33,42 @@
 					</dl>
 				</li>
 			<!-- END top_smilies_row -->
+		<!-- ELSE -->
+			<li>&nbsp;&nbsp;&nbsp;&nbsp;{L_NONE}</li>
+		<!-- ENDIF -->
+	</ul>
+	<h3>{L_BBCODE}</h3>
+	<div class="column1">
+		<dl class="details">
+			<dt>{L_BBCODE_COUNT}:</dt><dd>{TOTAL_BBCODES}</dd>
+		</dl>
+	</div>
+	<div class="column2">
+		<dl class="details">
+			<dt>{L_BBCODE_COUNT_CUSTOM}:</dt><dd>{TOTAL_BBCODES_CUSTOM}</dd>
+		</dl>
+	</div><br style="clear: both;" />
+	<h3>{TOP_BBCODES}</h3>
+	<ul class="stats_graph">
+		<li class="header">
+			<dl>
+				<dt>{L_BBCODE}</dt>
+				<dd class="bar">&nbsp;</dd>
+				<dd class="count">{L_COUNT}</dd>
+				<dd class="percent">{L_PERCENT}</dd>
+			</dl>
+		</li>
+		<!-- IF .top_bbcodes_row -->
+			<!-- BEGIN top_bbcodes_row -->
+				<li class="stats_data">
+					<dl>
+						<dt>{top_bbcodes_row.BBCODE}</dt>
+						<dd class="bar"><div class="graph" style="width:{top_bbcodes_row.BARWIDTH}%;">&nbsp;</div></dd>
+						<dd class="count">{top_bbcodes_row.COUNT}</dd>
+						<dd class="percent">{top_bbcodes_row.PCT}%</dd>
+					</dl>
+				</li>
+			<!-- END top_bbcodes_row -->
 		<!-- ELSE -->
 			<li>&nbsp;&nbsp;&nbsp;&nbsp;{L_NONE}</li>
 		<!-- ENDIF -->

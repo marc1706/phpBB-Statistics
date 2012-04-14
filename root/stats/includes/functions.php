@@ -403,6 +403,133 @@ class phpbb_stats
 	}
 	
 	/**
+	* get top bbcodes by count
+	*
+	* Copyright (c) 2009 - 2012 Marc Alexander(marc1706) www.m-a-styles.de
+	*
+	* param $limit (int): the top xx bbcodes that should be returned
+	*/
+	public function top_bbcodes($type = '', $limit = 0)
+	{
+		global $db, $phpbb_root_path, $phpEx, $cache;
+		
+		$post_ary = $bbcode_ary = array();
+		
+		$update = request_var('update_bbcode', false);
+		
+		$ret = $cache->get('stats_top_bbcodes');
+		
+		if ($ret === false)
+		{
+			//	We need some BBCode information
+			$bbcodes = array();
+			$bbcode_ary[0] = array('bbcode' => '[/b:', 'count' => 0);
+			$bbcode_ary[1] = array('bbcode' => '[/attachment:', 'count' => 0);
+			$bbcode_ary[2] = array('bbcode' => '[/code:', 'count' => 0);
+			//$bbcode_ary[3] = array('bbcode' => '[*', 'count' => 0);
+			$bbcode_ary[4] = array('bbcode' => '[/size:', 'count' => 0);
+			$bbcode_ary[5] = array('bbcode' => '[/i:', 'count' => 0);
+			$bbcode_ary[6] = array('bbcode' => '[list:', 'count' => 0);
+			$bbcode_ary[7] = array('bbcode' => '[/img:', 'count' => 0);
+			$bbcode_ary[8] = array('bbcode' => '[list=', 'count' => 0);
+			$bbcode_ary[9] = array('bbcode' => '[/quote:', 'count' => 0);
+			$bbcode_ary[10] = array('bbcode' => '[/color:', 'count' => 0);
+			$bbcode_ary[11] = array('bbcode' => '[/u:', 'count' => 0);
+			$bbcode_ary[12] = array('bbcode' => '[/url:', 'count' => 0);
+			$bbcode_ary[13] = array('bbcode' => '[/flash:', 'count' => 0);
+				
+			// now get the custom BBCodes
+			$sql = 'SELECT bbcode_tag AS tag
+					FROM ' . BBCODES_TABLE;
+			$result = $db->sql_query($sql);
+			while ($bbcode_row = $db->sql_fetchrow($result))
+			{
+				if(preg_match ('/[^a-z]/i', $bbcode_row['tag']))
+				{
+					$bbcode_row['tag'] = preg_replace('/[^a-zA-Z0-9\s]/', '', $bbcode_row['tag']);
+				}
+				
+				//Make sure we don't get any duplicates
+				if(!in_array(array('bbcode' => '[/' . strtolower($bbcode_row['tag']) . ':', 'count' => 0), $bbcode_ary))
+				{
+					$bbcode_ary[] = array('bbcode' => '[/' . strtolower($bbcode_row['tag']) . ':', 'count' => 0);
+				}
+			}	
+			$db->sql_freeresult($result);
+			
+			$update = true;
+		}
+		else
+		{
+			$bbcode_ary = $ret;
+		}
+		
+		if ($update)
+		{
+			$start = request_var('start_bbcode', 0);
+
+			//	first we have to get all posts from the database
+			$sql = 'SELECT post_text 
+					FROM ' . POSTS_TABLE . '
+					ORDER BY post_id ASC';
+			$result = $db->sql_query_limit($sql, 5000, $start);
+			$affected_rows = $db->sql_affectedrows();
+			while ($row = $db->sql_fetchrow($result))
+			{	
+				$text = $row['post_text'];
+				
+				/**	strip the bbcodes
+				*	we can't use preg_match_all here, since that will just parse everything that looks like a bbcode
+				*/
+				foreach($bbcode_ary as $key => $current_bbcode)
+				{
+					$bbcode_ary[$key]['count'] = $bbcode_ary[$key]['count'] + ((strlen($text) - strlen(str_replace($current_bbcode['bbcode'], '', $text))) / strlen($current_bbcode['bbcode']));
+				}
+			}			
+			$db->sql_freeresult($result);
+			
+			// put the bbcode data into an array
+			if (!empty($bbcode_ary))
+			{
+				$count_ary = array();
+				foreach ($bbcode_ary as $key => $cur)
+				{
+					$count_ary[$key] = $cur['count'];
+				}
+				array_multisort($count_ary, SORT_DESC, $bbcode_ary);
+			}
+			$cache->put('stats_top_bbcodes', $bbcode_ary, $this->cache_time);
+			
+			if($affected_rows == 5000) // set this to the limit number of the post_text sql query
+			{
+				$url = $this->u_action . '&amp;update_bbcode=1&amp;start_bbcode=' . ($start + 5000); // add the limit number to $start
+				meta_refresh(5, $url); // time is set to 5 seconds -- that should be enough for 5000 posts
+				return false; // Tell script that we need a refresh
+			}
+			else
+			{
+				// clean the URL
+				redirect($this->u_action);
+			}
+		}
+		
+		if (empty($type))
+		{
+			return array_slice($bbcode_ary, 0, $limit, true);
+		}
+		else // currently also return the total smiley count
+		{
+			$total_count = 0;
+			foreach ($bbcode_ary as $data)
+			{
+				$total_count = $total_count + $data['count'];
+			}
+			
+			return $total_count;
+		}
+	}
+	
+	/**
 	* get top smilies by count
 	*
 	* Copyright (c) 2009 - 2012 Marc Alexander(marc1706) www.m-a-styles.de
@@ -415,7 +542,7 @@ class phpbb_stats
 		
 		$post_ary = $smilies = array();
 		
-		$update = request_var('update', false);
+		$update = request_var('update_smiley', false);
 		
 		$ret = $cache->get('stats_top_smilies');
 		
@@ -447,7 +574,7 @@ class phpbb_stats
 		
 		if ($update)
 		{
-			$start = request_var('start', 0);
+			$start = request_var('start_smiley', 0);
 
 			//	first we have to get all posts from the database
 			$sql = 'SELECT post_text 
@@ -477,8 +604,6 @@ class phpbb_stats
 				foreach ($smilies as $key => $cur)
 				{
 					$count_ary[$key] = $cur['count'];
-					$url_ary[$key] = $cur['url'];
-					$emotion_ary[$key] = $cur['emotion'];
 				}
 				array_multisort($count_ary, SORT_DESC, $smilies);
 			}
@@ -486,9 +611,14 @@ class phpbb_stats
 			
 			if($affected_rows == 5000) // set this to the limit number of the post_text sql query
 			{
-				$url = $this->u_action . '&amp;update=1&amp;start=' . ($start + 5000); // add the limit number to $start
+				$url = $this->u_action . '&amp;update_smiley=1&amp;start_smiley=' . ($start + 5000); // add the limit number to $start
 				meta_refresh(5, $url); // time is set to 5 seconds -- that should be enough for 5000 posts
 				return false; // Tell script that we need a refresh
+			}
+			else
+			{
+				// clean the URL
+				redirect($this->u_action);
 			}
 		}
 		

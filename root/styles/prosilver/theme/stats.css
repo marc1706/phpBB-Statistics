@@ -67,6 +67,7 @@ ul.stats_graph li.header dd {
 ul.stats_graph dd.bar {
 	display: block;
 	float: left;
+	padding-bottom: 5px;
 	width: 30%;
 }
 

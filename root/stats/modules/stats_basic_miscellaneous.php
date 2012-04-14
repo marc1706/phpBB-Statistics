@@ -58,10 +58,10 @@ class stats_basic_miscellaneous_module
 		// get top smilies
 		$top_smilies = $stats->top_smilies('', $sort_by);
 		
-		if (empty($top_smilies))
+		if ($top_smilies === false)
 		{
-			// Tell the user how far we have come
-			$progress_info = sprintf($user->lang['RECOUNT_PROGRESS'], request_var('start', 0), $config['num_posts']);
+			// Tell the user how far we have come -- if we are here we always have another 5000 posts processed
+			$progress_info = sprintf($user->lang['RECOUNT_PROGRESS'], $user->lang['SMILEY'], request_var('start', 0) + 5000, $config['num_posts']);
 			trigger_error($progress_info);
 		}
 		else
@@ -86,13 +86,72 @@ class stats_basic_miscellaneous_module
 			}
 		}
 		
+		// get top bbcodes
+		$bbcode_ary = $stats->top_bbcodes('', $sort_by);
+		
+		if ($bbcode_ary === false)
+		{
+			// Tell the user how far we have come -- if we are here we always have another 5000 posts processed
+			$progress_info = sprintf($user->lang['RECOUNT_PROGRESS'], $user->lang['BBCODE'], request_var('start', 0) + 5000, $config['num_posts']);
+			trigger_error($progress_info);
+		}
+		else
+		{
+			//	Make the BBCodes look nicely
+			foreach ($bbcode_ary as $temp_row)
+			{
+				$test_result = preg_replace('/[^a-zA-Z0-9\s]/', '', $temp_row['bbcode']);
+				$test_result2 = strpos($temp_row['bbcode'], '/');
+				$test_result3 = strpos($temp_row['bbcode'], ':', (strlen($temp_row['bbcode']) - 1));
+				if($test_result2 == 1)
+				{
+					$temp_row['bbcode'] = '[' . (($test_result3 > 0) ? substr($temp_row['bbcode'], 2, -1) : substr($temp_row['bbcode'], 2)) . ']' . substr($temp_row['bbcode'], 0, -1) . ']';
+				}
+				elseif(!empty($test_result))
+				{
+					$temp_row['bbcode'] = '[' . (($test_result3 > 0) ? substr($temp_row['bbcode'], 1, -1) : substr($temp_row['bbcode'], 1)) . '][/' . preg_replace('/[^a-zA-Z0-9\s]/', '', $temp_row['bbcode']) . ']';
+				}
+				else
+				{
+					$temp_row['bbcode'] = '[' . (substr($temp_row['bbcode'], 1)) . '][/' . (substr($temp_row['bbcode'], 1)) . ']';
+				}
+				$top_bbcodes[] = $temp_row;
+			}
+			
+			$total_bbcodes_count = $stats->top_bbcodes('total');
+			if(isset($top_bbcodes[0]['count']))
+			{					
+				$max_count = $top_bbcodes[0]['count'];
+			}
+			if ($total_bbcodes_count > 0 && $config['num_posts'] && isset($max_count))
+			{
+				foreach ($top_bbcodes as $current_bbcode)
+				{
+					$template->assign_block_vars('top_bbcodes_row', array(
+						'BBCODE'					=> $current_bbcode['bbcode'],
+						'COUNT'						=> $current_bbcode['count'],
+						'PCT'						=> number_format($current_bbcode['count'] / $total_bbcodes_count * 100, 2),
+						'BARWIDTH'					=> number_format($current_bbcode['count'] / $max_count * 100, 1),
+					));
+				}
+			}
+			
+		}
+		
+		// get custom bbcodes count
+		$total_bbcodes = sizeof($stats->top_bbcodes('', 9999));
+		$total_custom_bbcodes = $total_bbcodes - 13; // standard amount of bbcodes is 13
+		
 		
 		
 		$template->assign_vars(array(
 			'TOTAL_SMILIES'			=> $smiley_count['total'],
 			'SMILIES_DOP_COUNT'		=> (!empty($smiley_count['total'])) ? $smiley_count['dop'] . ' / ' . $smiley_count['total'] .  ' (' . number_format($smiley_count['dop'] / $smiley_count['total'] * 100, 2) . '%)' : ' 0 / 0',
 			'SORT_BY_PROMPT'		=> sprintf($user->lang['LIMIT_PROMPT'], $user->lang['SMILEY'] . ', ' . $user->lang['BBCODE'] . ', ' . $user->lang['ICONS']),
-			'TOP_SMILIES'			=> sprintf($user->lang['TOP_SMILIES_BY_URL'], $sort_by)
+			'TOP_SMILIES'			=> sprintf($user->lang['TOP_SMILIES_BY_URL'], $sort_by),
+			'TOP_BBCODES'			=> sprintf($user->lang['TOP_BBCODES'], $sort_by),
+			'TOTAL_BBCODES'			=> $total_bbcodes,
+			'TOTAL_BBCODES_CUSTOM'	=> $total_custom_bbcodes,
 		));
 		
 		return 'basic_miscellaneous.html';
