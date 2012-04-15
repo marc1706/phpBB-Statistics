@@ -142,6 +142,23 @@ class stats_basic_miscellaneous_module
 		$total_bbcodes = sizeof($stats->top_bbcodes('', 9999));
 		$total_custom_bbcodes = $total_bbcodes - 13; // standard amount of bbcodes is 13
 		
+		// get top icons
+		$total_icons = 0;
+		$total_icons = $stats->top_icons('total');
+		if ($total_icons > 0)
+		{
+			$top_icons = $stats->top_icons('', $sort_by);
+			$max_count = $top_icons[0]['count'];
+			foreach ($top_icons as $current_icon)
+			{					
+				$template->assign_block_vars('top_icons_row', array(	
+				'ICON'						=> '<img src="' . $phpbb_root_path . '/images/icons/' . $current_icon['icon_url'] . '" alt="' . $current_icon['icon_url'] . '" />',
+				'COUNT'						=> $current_icon['count'],
+				'PCT'						=> number_format($current_icon['count'] / $total_icons * 100, 2),
+				'BARWIDTH'					=> number_format($current_icon['count'] / $max_count * 100, 1),
+				));
+			}
+		}
 		
 		
 		$template->assign_vars(array(
@@ -150,6 +167,7 @@ class stats_basic_miscellaneous_module
 			'SORT_BY_PROMPT'		=> sprintf($user->lang['LIMIT_PROMPT'], $user->lang['SMILEY'] . ', ' . $user->lang['BBCODE'] . ', ' . $user->lang['ICONS']),
 			'TOP_SMILIES'			=> sprintf($user->lang['TOP_SMILIES_BY_URL'], $sort_by),
 			'TOP_BBCODES'			=> sprintf($user->lang['TOP_BBCODES'], $sort_by),
+			'TOP_ICONS'				=> sprintf($user->lang['TOP_ICONS'], $sort_by),
 			'TOTAL_BBCODES'			=> $total_bbcodes,
 			'TOTAL_BBCODES_CUSTOM'	=> $total_custom_bbcodes,
 		));

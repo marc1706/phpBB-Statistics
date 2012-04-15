@@ -517,7 +517,7 @@ class phpbb_stats
 		{
 			return array_slice($bbcode_ary, 0, $limit, true);
 		}
-		else // currently also return the total smiley count
+		else // currently also return the total bbcode count
 		{
 			$total_count = 0;
 			foreach ($bbcode_ary as $data)
@@ -530,10 +530,62 @@ class phpbb_stats
 	}
 	
 	/**
+	* get top icons by count
+	*
+	* param $type (string): the return type ('' = all data, everything else = total count)
+	* param $limit (int): the top xx icons that should be returned
+	*/
+	public function top_icons($type= '', $limit = 0)
+	{
+		global $db, $cache;
+		
+		$ret = $cache->get('stats_top_icons');
+		
+		if ($ret === false)
+		{
+			$sql = 'SELECT COUNT(t.topic_id) AS count, t.icon_id AS icon_id, i.icons_url AS icon_url
+					FROM ' . TOPICS_TABLE . ' t, ' . ICONS_TABLE . ' i
+					WHERE icon_id = i.icons_id
+						AND i.display_on_posting = 1
+						AND t.topic_approved = 1
+					GROUP BY icon_id
+					ORDER BY count DESC';
+			$result = $db->sql_query($sql);
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$ret[] = $row;
+			}			
+			$db->sql_freeresult($result);
+			
+			$cache->put('stats_top_icons', $ret, $this->cache_time);
+		}
+		
+		if (empty($type))
+		{
+			return array_slice($ret, 0, $limit, true);
+		}
+		else // currently also return the total smiley count
+		{
+			$total_count = 0;
+			foreach ($ret as $data)
+			{
+				if ($data['count'] == 0)
+				{
+					break; // stop if we reach an element with count 0
+				}
+				$total_count = $total_count + $data['count'];
+			}
+			
+			return $total_count;
+		}
+	}
+	
+	/**
 	* get top smilies by count
 	*
 	* Copyright (c) 2009 - 2012 Marc Alexander(marc1706) www.m-a-styles.de
 	*
+	* param $type (string): the return type ('' = all data, everything else = total count)
 	* param $limit (int): the top xx smilies that should be returned
 	*/
 	public function top_smilies($type = '', $limit = 0)

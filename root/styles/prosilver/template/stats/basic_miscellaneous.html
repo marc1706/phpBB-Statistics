@@ -73,6 +73,31 @@
 			<li>&nbsp;&nbsp;&nbsp;&nbsp;{L_NONE}</li>
 		<!-- ENDIF -->
 	</ul>
+	<h3>{TOP_ICONS}</h3>
+	<ul class="stats_graph">
+		<li class="header">
+			<dl>
+				<dt>{L_ICONS}</dt>
+				<dd class="bar">&nbsp;</dd>
+				<dd class="count">{L_COUNT}</dd>
+				<dd class="percent">{L_PERCENT}</dd>
+			</dl>
+		</li>
+		<!-- IF .top_icons_row -->
+			<!-- BEGIN top_icons_row -->
+				<li class="stats_data">
+					<dl>
+						<dt>{top_icons_row.ICON}</dt>
+						<dd class="bar"><div class="graph" style="width:{top_icons_row.BARWIDTH}%;">&nbsp;</div></dd>
+						<dd class="count">{top_icons_row.COUNT}</dd>
+						<dd class="percent">{top_icons_row.PCT}%</dd>
+					</dl>
+				</li>
+			<!-- END top_icons_row -->
+		<!-- ELSE -->
+			<li>&nbsp;&nbsp;&nbsp;&nbsp;{L_NONE}</li>
+		<!-- ENDIF -->
+	</ul>
 	<div class="sort_by">
 		<form id="sort_by" action="{U_ACTION}" method="post">
 			<div>
