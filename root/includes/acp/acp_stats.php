@@ -284,14 +284,47 @@ class acp_stats
 			break;
 			
 			case 'modules':
+				$user->add_lang('acp/modules');
 				$view = request_var('view', '');
 				$parent = request_var('parent_id', 0);
 				
 				switch ($view)
 				{
-					
+					case 'sub':
+						// redirect if we don't have a parent id
+						if (empty($parent))
+						{
+							redirect($this->u_action);
+						}
+
+						$template->assign_vars(array(
+							'S_IS_OVERVIEW' 	=> false,
+							'L_TITLE'			=> $user->lang['ACP_STATS_MODULES_INFO'],
+							'L_TITLE_EXPLAIN'	=> $user->lang['ACP_STATS_MODULES_INFO_EXPLAIN'],
+						));
+						$this->page_title = $user->lang['ACP_STATS_MODULES_INFO'];
+						// display all parent modules
+						foreach ($stats->modules as $cur_module)
+						{
+							if ($cur_module['module_parent'] == $parent)
+							{
+								$template->assign_block_vars('stats_row', array(
+									'NAME'			=> (isset($user->lang[$cur_module['module_name']])) ? $user->lang[$cur_module['module_name']] : $cur_module['module_name'],
+									'U_EDIT'		=> $this->u_action . '&amp;view=edit&amp;id=' . $cur_module['module_id'],
+									'S_EDIT'		=> true, // @todo: we'll need to find out which module we can edit
+									'U_DELETE'		=> $this->u_action . '&amp;action=delete&amp;id=' . $cur_module['module_id'],
+								));
+							}
+						}
+					break;
 					
 					default:
+						$template->assign_vars(array(
+							'S_IS_OVERVIEW' 	=> true,
+							'L_TITLE'			=> $user->lang['ACP_STATS_MODULES_INFO'],
+							'L_TITLE_EXPLAIN'	=> $user->lang['ACP_STATS_MODULES_INFO_EXPLAIN'],
+						));
+						$this->page_title = $user->lang['ACP_STATS_MODULES_INFO'];
 						// display all parent modules
 						foreach ($stats->modules as $cur_module)
 						{
@@ -301,6 +334,7 @@ class acp_stats
 									'NAME'			=> (isset($user->lang[$cur_module['module_name']])) ? $user->lang[$cur_module['module_name']] : $cur_module['module_name'],
 									'U_EDIT'		=> $this->u_action . '&amp;view=edit&amp;id=' . $cur_module['module_id'],
 									'S_EDIT'		=> true, // @todo: we'll need to find out which module we can edit
+									'U_SUB'			=> $this->u_action . '&amp;view=sub&amp;parent_id=' . $cur_module['module_id'],
 								));
 							}
 						}
@@ -351,7 +385,7 @@ class acp_stats
 
 
 
-		if ($submit && (($mode == 'modules' && $addon_action == 'edit') || $mode == 'settings'))
+		if ($submit && (($mode == 'modules' && $view == 'edit') || $mode == 'settings'))
 		{
 			add_log('admin', 'LOG_STATS_CONFIG_' . strtoupper($mode));
 			trigger_error($user->lang['CONFIG_UPDATED'] . adm_back_link($this->u_action));
@@ -361,7 +395,7 @@ class acp_stats
 			trigger_error($user->lang['CONFIG_UPDATED'] . adm_back_link($this->u_action));
 		}
 
-		if($mode != 'modules' || ($mode == 'addons' && $addon_action == 'edit'))
+		if($mode != 'modules' || ($mode == 'modules' && $view == 'edit'))
 		{
 			$this->tpl_name = 'acp_board';
 			$this->page_title = $display_vars['title'];

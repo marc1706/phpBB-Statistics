@@ -6,23 +6,22 @@
 
 <h1>{L_TITLE}</h1>
 
+<p>{L_TITLE_EXPLAIN}</p>
+
 <table cellspacing="1">
 	<col class="row1" /><col class="row2" />
 <thead>
 <tr>
-	<th>{L_STATS_ADDONS}</th>
-	<th>{L_ACTIONS}</th>
+	<th>{L_ACP_STATS_MODULES_INFO}</th>
+	<!-- IF not S_IS_OVERVIEW --><th>{L_ACTIONS}</th><!-- ENDIF -->
 	<th></th>
 </tr>
 </thead>
 <tbody>
-<tr>
-	<td class="row3" colspan="3"><strong>{L_INSTALLED_ADDONS}</strong></td>
-</tr>
 <!-- BEGIN stats_row -->
 <tr>
-	<td><strong>{stats_row.NAME}</strong></td>
-	<td style="text-align: center;">{stats_row.S_ACTIONS}</td>
+	<td><strong><!-- IF S_IS_OVERVIEW --><a href="{stats_row.U_SUB}"><!-- ENDIF -->{stats_row.NAME}<!-- IF S_IS_OVERVIEW --></a><!-- ENDIF --></strong></td>
+	<!-- IF not S_IS_OVERVIEW --><td style="text-align: center;">{stats_row.S_ACTIONS}</td><!-- ENDIF -->
 	<td style="vertical-align: top; width: 100px; text-align: right; white-space: nowrap;">
 		<!-- IF stats_row.S_FIRST_ROW && not stats_row.S_LAST_ROW -->
 			{ICON_MOVE_UP_DISABLED}
@@ -46,18 +45,15 @@
 	<td style="text-align: center;">&nbsp;</td>
 </tr>
 <!-- END stats_row -->
-<!-- IF S_UNINSTALLED_ADDONS -->
-<tr>
-	<td class="row3" colspan="2"><strong>{L_UNINSTALLED_ADDONS}</strong></td>
-</tr>
-<!-- ENDIF -->
-<!-- BEGIN addons_urow -->
-<tr>
-	<td><strong>{addons_urow.NAME}</strong></td>
-	<td style="text-align: center;">{addons_urow.U_INSTALL}</td>
-</tr>
-<!-- END addons_urow -->
 </tbody>
 </table>
+<form id="acp_stats" method="post" action="{U_ACTION}">
+<fieldset class="tabulated">
+	<p class="quick">
+		<input class="button2" type="submit" value="{L_ADD_MODULE}" name="quickadd" />
+	</p>
+	{S_FORM_TOKEN}
+</fieldset>
+</form>
 
 <!-- INCLUDE overall_footer.html -->
