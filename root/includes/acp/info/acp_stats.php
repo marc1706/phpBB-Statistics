@@ -22,10 +22,10 @@ class acp_stats_info
 		return array(
 			'filename'	=> 'acp_stats',
 			'title'		=> 'ACP_STATS_INFO',
-			'version'	=> '1.0.3',
+			'version'	=> '2.0.0',
 			'modes'		=> array(
 				'settings'			=> array('title' => 'ACP_STATS_GENERAL_INFO', 'auth' => 'acl_a_board', 'cat' => array('ACP_BOARD_CONFIGURATION')),
-				'addons'			=> array('title' => 'ACP_STATS_ADDONS', 'auth' => 'acl_a_board', 'cat' => array('ACP_BOARD_CONFIGURATION')),
+				'modules'			=> array('title' => 'ACP_STATS_MODULES_INFO', 'auth' => 'acl_a_board', 'cat' => array('ACP_BOARD_CONFIGURATION')),
 			),
 		);
 	}

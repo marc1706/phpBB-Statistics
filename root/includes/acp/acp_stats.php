@@ -29,17 +29,16 @@ class acp_stats
 		*/
 		global $stats;
 		$stats = new phpbb_stats();
+		
+		// get modules
+		$stats->obtain_modules();
 
-		//$user->add_lang('mods/lang_stats_acp');
 		$user->add_lang('mods/stats');
 
 		$action = request_var('action', '');
 		$submit = (isset($_POST['submit'])) ? true : false;
-		
-		$addon_name = request_var('addon_name', '');
-		$addon_action = request_var('addon_action', '');
-		$addons = array();
 
+		// @todo: remove this --> not needed anymore
 		if($mode == 'addons')
 		{
 			$addon_loaded = false;
@@ -262,7 +261,6 @@ class acp_stats
 		*/
 		switch ($mode)
 		{
-		// @todo: split into module dependent settings, which is better for extra features
 			case 'settings':
 				$display_vars = array(
 					'title'	=> 'ACP_STATS_GENERAL_INFO',
@@ -285,11 +283,28 @@ class acp_stats
 				);
 			break;
 			
-			case 'addons':
-				/**
-				* We already did this on top of this switch, so don't do anything
-				* This is just so we don't get an error
-				*/
+			case 'modules':
+				$view = request_var('view', '');
+				$parent = request_var('parent_id', 0);
+				
+				switch ($view)
+				{
+					
+					
+					default:
+						// display all parent modules
+						foreach ($stats->modules as $cur_module)
+						{
+							if ($cur_module['module_parent'] == 0)
+							{
+								$template->assign_block_vars('stats_row', array(
+									'NAME'			=> (isset($user->lang[$cur_module['module_name']])) ? $user->lang[$cur_module['module_name']] : $cur_module['module_name'],
+									'U_EDIT'		=> $this->u_action . '&amp;view=edit&amp;id=' . $cur_module['module_id'],
+									'S_EDIT'		=> true, // @todo: we'll need to find out which module we can edit
+								));
+							}
+						}
+				}
 				
 			break;
 			
@@ -336,7 +351,7 @@ class acp_stats
 
 
 
-		if ($submit && (($mode == 'addons' && $addon_action == 'edit') || $mode == 'settings'))
+		if ($submit && (($mode == 'modules' && $addon_action == 'edit') || $mode == 'settings'))
 		{
 			add_log('admin', 'LOG_STATS_CONFIG_' . strtoupper($mode));
 			trigger_error($user->lang['CONFIG_UPDATED'] . adm_back_link($this->u_action));
@@ -346,7 +361,7 @@ class acp_stats
 			trigger_error($user->lang['CONFIG_UPDATED'] . adm_back_link($this->u_action));
 		}
 
-		if($mode != 'addons' || ($mode == 'addons' && $addon_action == 'edit'))
+		if($mode != 'modules' || ($mode == 'addons' && $addon_action == 'edit'))
 		{
 			$this->tpl_name = 'acp_board';
 			$this->page_title = $display_vars['title'];
@@ -408,10 +423,10 @@ class acp_stats
 		}
 		else
 		{
-			$this->tpl_name = 'acp_stats_addons';
-			$this->page_title = $user->lang['STATS_ADDONS'];
+			$this->tpl_name = 'acp_stats_modules';
+			$this->page_title = $user->lang['ACP_STATS_MODULES_INFO'];
 			
-			$template->assign_var('S_UNINSTALLED_ADDONS', $uninstalled_addons);
+			//$template->assign_var('S_UNINSTALLED_ADDONS', $uninstalled_addons);
 		}
 	}
 	
