@@ -287,6 +287,45 @@ class acp_stats
 				$user->add_lang('acp/modules');
 				$view = request_var('view', '');
 				$parent = request_var('parent_id', 0);
+				$id = request_var('id', 0);
+				
+				switch ($action)
+				{
+					case 'move_up':
+						foreach ($stats->modules as $module)
+						{
+							if ($module['module_id'] == $id)
+							{
+								break; // just leave all data in $module
+							}
+						}
+						
+						if ($module['module_order'] <= 0)
+						{
+							break; // this shouldn't happen
+						}
+						
+						$stats->move_module('up', $module);
+						
+					break;
+					
+					case 'move_down':
+						foreach ($stats->modules as $module)
+						{
+							if ($module['module_id'] == $id)
+							{
+								break; // just leave all data in $module
+							}
+						}
+						
+						if ($module['module_order'] <= 0)
+						{
+							break; // this shouldn't happen
+						}
+						
+						$stats->move_module('down', $module);
+					break;
+				}
 				
 				switch ($view)
 				{
@@ -313,6 +352,8 @@ class acp_stats
 									'U_EDIT'		=> $this->u_action . '&amp;view=edit&amp;id=' . $cur_module['module_id'],
 									'S_EDIT'		=> true, // @todo: we'll need to find out which module we can edit
 									'U_DELETE'		=> $this->u_action . '&amp;action=delete&amp;id=' . $cur_module['module_id'],
+									'U_MOVE_UP'		=> $this->u_action . '&amp;id=' . $cur_module['module_id'] . '&amp;action=move_up',
+									'U_MOVE_DOWN'	=> $this->u_action . '&amp;id=' . $cur_module['module_id'] . '&amp;action=move_down',
 								));
 							}
 						}
@@ -335,6 +376,8 @@ class acp_stats
 									'U_EDIT'		=> $this->u_action . '&amp;view=edit&amp;id=' . $cur_module['module_id'],
 									'S_EDIT'		=> true, // @todo: we'll need to find out which module we can edit
 									'U_SUB'			=> $this->u_action . '&amp;view=sub&amp;parent_id=' . $cur_module['module_id'],
+									'U_MOVE_UP'		=> $this->u_action . '&amp;id=' . $cur_module['module_id'] . '&amp;action=move_up',
+									'U_MOVE_DOWN'	=> $this->u_action . '&amp;id=' . $cur_module['module_id'] . '&amp;action=move_down',
 								));
 							}
 						}

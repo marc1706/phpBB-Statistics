@@ -15,7 +15,6 @@ $phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './';
 $phpbb_stats_path = $phpbb_root_path . 'stats/';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 include($phpbb_root_path . 'common.' . $phpEx);
-include($phpbb_stats_path . 'includes/constants.' . $phpEx);
 include($phpbb_stats_path . 'includes/functions.' . $phpEx);
 
 // Start session

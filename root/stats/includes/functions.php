@@ -31,7 +31,13 @@ class phpbb_stats
 	*/
 	public function __construct()
 	{
-		global $config, $phpbb_root_path, $phpEx;
+		global $config, $phpbb_root_path, $phpbb_stats_path, $phpEx;
+		
+		// include the constants file
+		if (!defined('STATS_MODULES_TABLE'))
+		{
+			include($phpbb_root_path . 'stats/includes/constants.' . $phpEx);
+		}
 		
 		// cache time is in hours
 		$this->cache_time = $config['stats_cache_time'] * 3600;
@@ -51,14 +57,14 @@ class phpbb_stats
 	
 	/** create sort by drop-down box from specified options
 	*
-	* param $options (array): holds the options data
+	* @param $options (array): holds the options data
 	*	the options array needs to have the following structure:
 	*	array => (
 	*		'option1_value' => 'option1_name',
 	*	)
 	*
-	* param $tpl_row (string): the name of the template row this should be assigned to
-	* param $selected (string): the value of the currently selected option
+	* @param $tpl_row (string): the name of the template row this should be assigned to
+	* @param $selected (string): the value of the currently selected option
 	*
 	*/
 	public function create_sort_by($options = array(), $tpl_row = 'sort_by_row', $selected = '')
@@ -83,7 +89,7 @@ class phpbb_stats
 	/**
 	* get the count of each forum type
 	*
-	* param $type (string):	choose wether you want the whole array or just one forum type
+	* @param $type (string):	choose wether you want the whole array or just one forum type
 	* 						getting only one type will not decrease the server load
 	*/
 	public function forum_type_count($type = '')
@@ -238,6 +244,59 @@ class phpbb_stats
 		
 		return $result;
 	}
+	
+	/**
+	* move a module
+	*
+	* @param $type (string): the desired action type
+	* @param $module (array): contains the module row of the specified module
+	*/
+	public function move_module($type = '', $module)
+	{
+		global $db, $cache;
+		
+		if (empty($type))
+		{
+			return;
+		}
+		
+		switch ($type)
+		{
+			case 'up':
+				$move_action = -1;
+			break;
+			case 'down':
+				$move_action = 1;
+			break;
+			default:
+				return;
+		}
+		
+		if ($module['module_parent'] == 0)
+		{
+			$sql_where = ' AND module_parent = 0';
+		}
+		else
+		{
+			$sql_where = ' AND module_parent = ' . $module['module_parent'];
+		}
+		
+		$sql = 'UPDATE ' . STATS_MODULES_TABLE . '
+				SET module_order = module_order - ' . $move_action . '
+				WHERE module_order = ' . ($module['module_order'] + $move_action) . $sql_where;
+		$result = $db->sql_query($sql);
+		$db->sql_freeresult($result);
+		
+		$sql = 'UPDATE ' . STATS_MODULES_TABLE . '
+				SET module_order = module_order + ' . $move_action . '
+				WHERE module_id = ' . $module['module_id'];
+		$result = $db->sql_query($sql);
+		$db->sql_freeresult($result);
+		
+		$cache->destroy('stats_modules');
+		
+		return true; // might be used later on, or we do error handling in here
+	}
 
 	/**
 	* grab all stats modules from the database
@@ -249,7 +308,7 @@ class phpbb_stats
 		$ret = $cache->get('stats_modules');
 		if ($ret === false)
 		{
-			$sql = 'SELECT * FROM ' . STATS_MODULES_TABLE . ' ORDER BY module_id ASC';
+			$sql = 'SELECT * FROM ' . STATS_MODULES_TABLE . ' ORDER BY module_id ASC, module_order ASC';
 			$result = $db->sql_query($sql);
 			
 			while ($row = $db->sql_fetchrow($result))
@@ -267,7 +326,7 @@ class phpbb_stats
 	/**
 	* parse the menu
 	*
-	* param $module_id (int): the currently active module
+	* @param $module_id (int): the currently active module
 	*/
 	public function parse_menu($module)
 	{
@@ -305,7 +364,7 @@ class phpbb_stats
 	/**
 	* get the number of smilies installed on the board 
 	*
-	* param $type (string): decide which data to return
+	* @param $type (string): decide which data to return
 	*/
 	public function smiley_count($type = '')
 	{
@@ -349,7 +408,7 @@ class phpbb_stats
 	/**
 	* get the count of each topic type
 	*
-	* param $type (string):	choose wether you want the whole array or just one topic type
+	* @param $type (string):	choose wether you want the whole array or just one topic type
 	* 						getting only one type will not decrease the server load
 	*/
 	public function topic_type_count($type = '')
@@ -407,7 +466,7 @@ class phpbb_stats
 	*
 	* Copyright (c) 2009 - 2012 Marc Alexander(marc1706) www.m-a-styles.de
 	*
-	* param $limit (int): the top xx bbcodes that should be returned
+	* @param $limit (int): the top xx bbcodes that should be returned
 	*/
 	public function top_bbcodes($type = '', $limit = 0)
 	{
@@ -532,8 +591,8 @@ class phpbb_stats
 	/**
 	* get top icons by count
 	*
-	* param $type (string): the return type ('' = all data, everything else = total count)
-	* param $limit (int): the top xx icons that should be returned
+	* @param $type (string): the return type ('' = all data, everything else = total count)
+	* @param $limit (int): the top xx icons that should be returned
 	*/
 	public function top_icons($type= '', $limit = 0)
 	{
@@ -585,8 +644,8 @@ class phpbb_stats
 	*
 	* Copyright (c) 2009 - 2012 Marc Alexander(marc1706) www.m-a-styles.de
 	*
-	* param $type (string): the return type ('' = all data, everything else = total count)
-	* param $limit (int): the top xx smilies that should be returned
+	* @param $type (string): the return type ('' = all data, everything else = total count)
+	* @param $limit (int): the top xx smilies that should be returned
 	*/
 	public function top_smilies($type = '', $limit = 0)
 	{
@@ -784,7 +843,7 @@ class phpbb_stats
 	* get the count of each user type
 	* we only count active/inactive users and bots that have visited/haven't visited
 	*
-	* param $type (string):	choose wether you want the whole array or just one type
+	* @param $type (string):	choose wether you want the whole array or just one type
 	* 						getting only one type will not decrease the server load
 	*/
 	public function user_accounts_data($type = '')
