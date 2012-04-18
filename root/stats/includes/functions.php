@@ -308,7 +308,7 @@ class phpbb_stats
 		$ret = $cache->get('stats_modules');
 		if ($ret === false)
 		{
-			$sql = 'SELECT * FROM ' . STATS_MODULES_TABLE . ' ORDER BY module_id ASC, module_order ASC';
+			$sql = 'SELECT * FROM ' . STATS_MODULES_TABLE . ' ORDER BY module_id ASC';
 			$result = $db->sql_query($sql);
 			
 			while ($row = $db->sql_fetchrow($result))
