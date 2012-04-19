@@ -32,6 +32,7 @@ class acp_stats
 		
 		// get modules
 		$stats->obtain_modules();
+		$stats->u_action = $this->u_action;
 
 		$user->add_lang('mods/stats');
 
@@ -305,7 +306,7 @@ class acp_stats
 							break; // this shouldn't happen
 						}
 						
-						$stats->move_module('up', $module);
+						$stats->move_module('up', $module, (!empty($module['module_parent'])) ? $this->u_action . '&amp;view=sub&amp;parent_id=' . $module['module_parent'] : '');
 						
 					break;
 					
@@ -318,12 +319,12 @@ class acp_stats
 							}
 						}
 						
-						if ($module['module_order'] <= 0)
+						if ($module['module_order'] < 0)
 						{
 							break; // this shouldn't happen
 						}
 						
-						$stats->move_module('down', $module);
+						$stats->move_module('down', $module, (!empty($module['module_parent'])) ? $this->u_action . '&amp;view=sub&amp;parent_id=' . $module['module_parent'] : '');
 					break;
 				}
 				
@@ -342,20 +343,28 @@ class acp_stats
 							'L_TITLE_EXPLAIN'	=> $user->lang['ACP_STATS_MODULES_INFO_EXPLAIN'],
 						));
 						$this->page_title = $user->lang['ACP_STATS_MODULES_INFO'];
-						// display all parent modules
+						// display all submodules
+						$modules_ary = $module_orders = array();
 						foreach ($stats->modules as $cur_module)
 						{
 							if ($cur_module['module_parent'] == $parent)
 							{
-								$template->assign_block_vars('stats_row', array(
-									'NAME'			=> (isset($user->lang[$cur_module['module_name']])) ? $user->lang[$cur_module['module_name']] : $cur_module['module_name'],
-									'U_EDIT'		=> $this->u_action . '&amp;view=edit&amp;id=' . $cur_module['module_id'],
-									'S_EDIT'		=> true, // @todo: we'll need to find out which module we can edit
-									'U_DELETE'		=> $this->u_action . '&amp;action=delete&amp;id=' . $cur_module['module_id'],
-									'U_MOVE_UP'		=> $this->u_action . '&amp;id=' . $cur_module['module_id'] . '&amp;action=move_up',
-									'U_MOVE_DOWN'	=> $this->u_action . '&amp;id=' . $cur_module['module_id'] . '&amp;action=move_down',
-								));
+								$modules_ary[] = $cur_module;
+								$module_orders[] = $cur_module['module_order'];
 							}
+						}
+						array_multisort($module_orders, SORT_ASC, $modules_ary);
+						
+						foreach ($modules_ary as $cur_module)
+						{
+							$template->assign_block_vars('stats_row', array(
+								'NAME'			=> (isset($user->lang[$cur_module['module_name']])) ? $user->lang[$cur_module['module_name']] : $cur_module['module_name'],
+								'U_EDIT'		=> $this->u_action . '&amp;view=edit&amp;id=' . $cur_module['module_id'],
+								'S_EDIT'		=> true, // @todo: we'll need to find out which module we can edit
+								'U_DELETE'		=> $this->u_action . '&amp;action=delete&amp;id=' . $cur_module['module_id'],
+								'U_MOVE_UP'		=> $this->u_action . '&amp;id=' . $cur_module['module_id'] . '&amp;action=move_up',
+								'U_MOVE_DOWN'	=> $this->u_action . '&amp;id=' . $cur_module['module_id'] . '&amp;action=move_down',
+							));
 						}
 					break;
 					
@@ -367,19 +376,27 @@ class acp_stats
 						));
 						$this->page_title = $user->lang['ACP_STATS_MODULES_INFO'];
 						// display all parent modules
+						$modules_ary = $module_orders = array();
 						foreach ($stats->modules as $cur_module)
 						{
 							if ($cur_module['module_parent'] == 0)
 							{
-								$template->assign_block_vars('stats_row', array(
-									'NAME'			=> (isset($user->lang[$cur_module['module_name']])) ? $user->lang[$cur_module['module_name']] : $cur_module['module_name'],
-									'U_EDIT'		=> $this->u_action . '&amp;view=edit&amp;id=' . $cur_module['module_id'],
-									'S_EDIT'		=> true, // @todo: we'll need to find out which module we can edit
-									'U_SUB'			=> $this->u_action . '&amp;view=sub&amp;parent_id=' . $cur_module['module_id'],
-									'U_MOVE_UP'		=> $this->u_action . '&amp;id=' . $cur_module['module_id'] . '&amp;action=move_up',
-									'U_MOVE_DOWN'	=> $this->u_action . '&amp;id=' . $cur_module['module_id'] . '&amp;action=move_down',
-								));
+								$modules_ary[] = $cur_module;
+								$module_orders[] = $cur_module['module_order'];
 							}
+						}
+						array_multisort($module_orders, SORT_ASC, $modules_ary);
+						
+						foreach ($modules_ary as $cur_module)
+						{
+							$template->assign_block_vars('stats_row', array(
+								'NAME'			=> (isset($user->lang[$cur_module['module_name']])) ? $user->lang[$cur_module['module_name']] : $cur_module['module_name'],
+								'U_EDIT'		=> $this->u_action . '&amp;view=edit&amp;id=' . $cur_module['module_id'],
+								'S_EDIT'		=> true, // @todo: we'll need to find out which module we can edit
+								'U_SUB'			=> $this->u_action . '&amp;view=sub&amp;parent_id=' . $cur_module['module_id'],
+								'U_MOVE_UP'		=> $this->u_action . '&amp;id=' . $cur_module['module_id'] . '&amp;action=move_up',
+								'U_MOVE_DOWN'	=> $this->u_action . '&amp;id=' . $cur_module['module_id'] . '&amp;action=move_down',
+							));
 						}
 				}
 				

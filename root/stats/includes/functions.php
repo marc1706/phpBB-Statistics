@@ -251,25 +251,13 @@ class phpbb_stats
 	* @param $type (string): the desired action type
 	* @param $module (array): contains the module row of the specified module
 	*/
-	public function move_module($type = '', $module)
+	public function move_module($type = '', $module, $redirect = '')
 	{
-		global $db, $cache;
+		global $db, $cache, $user;
 		
 		if (empty($type))
 		{
 			return;
-		}
-		
-		switch ($type)
-		{
-			case 'up':
-				$move_action = -1;
-			break;
-			case 'down':
-				$move_action = 1;
-			break;
-			default:
-				return;
 		}
 		
 		if ($module['module_parent'] == 0)
@@ -281,19 +269,47 @@ class phpbb_stats
 			$sql_where = ' AND module_parent = ' . $module['module_parent'];
 		}
 		
-		$sql = 'UPDATE ' . STATS_MODULES_TABLE . '
-				SET module_order = module_order - ' . $move_action . '
-				WHERE module_order = ' . ($module['module_order'] + $move_action) . $sql_where;
-		$result = $db->sql_query($sql);
-		$db->sql_freeresult($result);
-		
-		$sql = 'UPDATE ' . STATS_MODULES_TABLE . '
-				SET module_order = module_order + ' . $move_action . '
-				WHERE module_id = ' . $module['module_id'];
-		$result = $db->sql_query($sql);
-		$db->sql_freeresult($result);
+		switch ($type)
+		{
+			case 'up':
+				$sql = 'UPDATE ' . STATS_MODULES_TABLE . '
+						SET module_order = module_order + 1
+						WHERE module_order = ' . ($module['module_order'] - 1) . $sql_where;
+				$result = $db->sql_query($sql);
+				$db->sql_freeresult($result);
+				
+				$sql = 'UPDATE ' . STATS_MODULES_TABLE . '
+						SET module_order = module_order - 1
+						WHERE module_id = ' . $module['module_id'];
+				$result = $db->sql_query($sql);
+				$db->sql_freeresult($result);
+			break;
+			case 'down':
+				$sql = 'UPDATE ' . STATS_MODULES_TABLE . '
+						SET module_order = module_order - 1
+						WHERE module_order = ' . ($module['module_order'] + 1) . $sql_where;
+				$result = $db->sql_query($sql);
+				$db->sql_freeresult($result);
+				
+				$sql = 'UPDATE ' . STATS_MODULES_TABLE . '
+						SET module_order = module_order + 1
+						WHERE module_id = ' . $module['module_id'];
+				$result = $db->sql_query($sql);
+				$db->sql_freeresult($result);
+			break;
+			default:
+				return;
+		}
 		
 		$cache->destroy('stats_modules');
+		
+		if (empty($redirect))
+		{
+			$redirect = $this->u_action;
+		}
+		
+		meta_refresh(3, $redirect);
+		trigger_error($user->lang['ACP_STATS_MODULE_MOVE_SUCCESS'] . adm_back_link($redirect));
 		
 		return true; // might be used later on, or we do error handling in here
 	}

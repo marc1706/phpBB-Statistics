@@ -26,6 +26,7 @@ $lang = array_merge($lang, array(
 	'ACP_STATS_VERSION'							=> '<strong>phpBB Statistics v%s</strong>',
 	'ACP_STATS_GENERAL_SETTINGS' 				=> 'General Settings',
 	'ACP_STATS_GENERAL_SETTINGS_EXPLAIN'		=> 'On this page, you can change settings which concern the whole Statistics MOD',
+	'ACP_STATS_MODULE_MOVE_SUCCESS'				=> 'Module moved successfully.',
 	
 	// settings
 	'ACP_STATS_ENABLE'							=> 'Enable Statistics',
