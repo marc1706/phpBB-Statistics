@@ -19,7 +19,7 @@ class acp_stats
 
 	function main($id, $mode)
 	{
-		global $db, $user, $template;
+		global $db, $user, $template, $cache;
 		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
 
 		include($phpbb_root_path . 'stats/includes/functions.' . $phpEx);
@@ -303,7 +303,7 @@ class acp_stats
 						
 						if ($module['module_order'] <= 0)
 						{
-							break; // this shouldn't happen
+							redirect($this->u_action); // this shouldn't happen
 						}
 						
 						$stats->move_module('up', $module, (!empty($module['module_parent'])) ? $this->u_action . '&amp;view=sub&amp;parent_id=' . $module['module_parent'] : '');
@@ -321,10 +321,60 @@ class acp_stats
 						
 						if ($module['module_order'] < 0)
 						{
-							break; // this shouldn't happen
+							redirect($this->u_action); // this shouldn't happen
 						}
 						
 						$stats->move_module('down', $module, (!empty($module['module_parent'])) ? $this->u_action . '&amp;view=sub&amp;parent_id=' . $module['module_parent'] : '');
+					break;
+					
+					case 'enable':
+						foreach ($stats->modules as $module)
+						{
+							if ($module['module_id'] == $id)
+							{
+								break; // just leave all data in $module
+							}
+						}
+						
+						$redirect = (!empty($module['module_parent'])) ? $this->u_action . '&amp;view=sub&amp;parent_id=' . $module['module_parent'] : $this->u_action;
+						
+						if ($module['module_status'] == true)
+						{
+							redirect($redirect);
+						}
+						
+						$sql = 'UPDATE ' . STATS_MODULES_TABLE . '
+								SET module_status = 1
+								WHERE module_id = ' . $module['module_id'];
+						$db->sql_query($sql);
+						
+						$cache->destroy('stats_modules');
+						redirect($redirect);
+					break;
+					
+					case 'disable':
+						foreach ($stats->modules as $module)
+						{
+							if ($module['module_id'] == $id)
+							{
+								break; // just leave all data in $module
+							}
+						}
+						
+						$redirect = (!empty($module['module_parent'])) ? $this->u_action . '&amp;view=sub&amp;parent_id=' . $module['module_parent'] : $this->u_action;
+						
+						if ($module['module_status'] == false)
+						{
+							redirect($redirect);
+						}
+						
+						$sql = 'UPDATE ' . STATS_MODULES_TABLE . '
+								SET module_status = 0
+								WHERE module_id = ' . $module['module_id'];
+						$db->sql_query($sql);
+						
+						$cache->destroy('stats_modules');
+						redirect($redirect);
 					break;
 				}
 				
@@ -357,6 +407,10 @@ class acp_stats
 						
 						foreach ($modules_ary as $cur_module)
 						{
+							$s_actions = '<a href="' . $this->u_action . '&amp;id=' . $cur_module['module_id'] . '&amp;action=';
+							$s_actions .= ($cur_module['module_status']) ? 'disable">' : 'enable">';
+							$s_actions .= ($cur_module['module_status']) ? $user->lang['DEACTIVATE'] : $user->lang['ACTIVATE'];
+							$s_actions .= '</a> | <a href="' . $this->u_action . '&amp;id=' . $cur_module['module_id'] . '&amp;action=remove">' . $user->lang['DELETE'] . '</a>';
 							$template->assign_block_vars('stats_row', array(
 								'NAME'			=> (isset($user->lang[$cur_module['module_name']])) ? $user->lang[$cur_module['module_name']] : $cur_module['module_name'],
 								'U_EDIT'		=> $this->u_action . '&amp;view=edit&amp;id=' . $cur_module['module_id'],
@@ -364,6 +418,8 @@ class acp_stats
 								'U_DELETE'		=> $this->u_action . '&amp;action=delete&amp;id=' . $cur_module['module_id'],
 								'U_MOVE_UP'		=> $this->u_action . '&amp;id=' . $cur_module['module_id'] . '&amp;action=move_up',
 								'U_MOVE_DOWN'	=> $this->u_action . '&amp;id=' . $cur_module['module_id'] . '&amp;action=move_down',
+								'S_ACTIONS'		=> $s_actions,
+								'S_IS_DISABLED'	=> ($cur_module['module_status']) ? false : true,
 							));
 						}
 					break;
@@ -389,6 +445,10 @@ class acp_stats
 						
 						foreach ($modules_ary as $cur_module)
 						{
+							$s_actions = '<a href="' . $this->u_action . '&amp;id=' . $cur_module['module_id'] . '&amp;action=';
+							$s_actions .= ($cur_module['module_status']) ? 'disable">' : 'enable">';
+							$s_actions .= ($cur_module['module_status']) ? $user->lang['DEACTIVATE'] : $user->lang['ACTIVATE'];
+							$s_actions .= '</a> | <a href="' . $this->u_action . '&amp;id=' . $cur_module['module_id'] . '&amp;action=remove">' . $user->lang['DELETE'] . '</a>';
 							$template->assign_block_vars('stats_row', array(
 								'NAME'			=> (isset($user->lang[$cur_module['module_name']])) ? $user->lang[$cur_module['module_name']] : $cur_module['module_name'],
 								'U_EDIT'		=> $this->u_action . '&amp;view=edit&amp;id=' . $cur_module['module_id'],
@@ -396,6 +456,8 @@ class acp_stats
 								'U_SUB'			=> $this->u_action . '&amp;view=sub&amp;parent_id=' . $cur_module['module_id'],
 								'U_MOVE_UP'		=> $this->u_action . '&amp;id=' . $cur_module['module_id'] . '&amp;action=move_up',
 								'U_MOVE_DOWN'	=> $this->u_action . '&amp;id=' . $cur_module['module_id'] . '&amp;action=move_down',
+								'S_ACTIONS'		=> $s_actions,
+								'S_IS_DISABLED'	=> ($cur_module['module_status']) ? false : true,
 							));
 						}
 				}

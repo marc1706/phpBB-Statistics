@@ -13,15 +13,15 @@
 <thead>
 <tr>
 	<th>{L_ACP_STATS_MODULES_INFO}</th>
-	<!-- IF not S_IS_OVERVIEW --><th>{L_ACTIONS}</th><!-- ENDIF -->
+	<th>{L_ACTIONS}</th>
 	<th></th>
 </tr>
 </thead>
 <tbody>
 <!-- BEGIN stats_row -->
 <tr>
-	<td><strong><!-- IF S_IS_OVERVIEW --><a href="{stats_row.U_SUB}"><!-- ENDIF -->{stats_row.NAME}<!-- IF S_IS_OVERVIEW --></a><!-- ENDIF --></strong></td>
-	<!-- IF not S_IS_OVERVIEW --><td style="text-align: center;">{stats_row.S_ACTIONS}</td><!-- ENDIF -->
+	<td<!-- IF stats_row.S_IS_DISABLED --> class="row3"<!-- ENDIF -->><strong><!-- IF S_IS_OVERVIEW --><a href="{stats_row.U_SUB}"><!-- ENDIF -->{stats_row.NAME}<!-- IF S_IS_OVERVIEW --></a><!-- ENDIF --></strong></td>
+	<td style="text-align: center;">{stats_row.S_ACTIONS}</td>
 	<td style="vertical-align: top; width: 100px; text-align: right; white-space: nowrap;">
 		<!-- IF stats_row.S_FIRST_ROW && not stats_row.S_LAST_ROW -->
 			{ICON_MOVE_UP_DISABLED}
