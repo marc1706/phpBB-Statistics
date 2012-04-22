@@ -38,6 +38,10 @@ class acp_stats
 
 		$action = request_var('action', '');
 		$submit = (isset($_POST['submit'])) ? true : false;
+		$add_module = (isset($_POST['add_module'])) ? true : false;
+		
+		$form_key = 'acp_stats';
+		add_form_key($form_key);
 
 		// @todo: remove this --> not needed anymore
 		if($mode == 'addons')
@@ -378,6 +382,136 @@ class acp_stats
 					break;
 				}
 				
+				if ($add_module)
+				{
+					if ($submit)
+					{
+						$module_file = request_var('module_classname', '');
+						
+						if (empty($module_file))
+						{
+							trigger_error('NO_MODULE', E_USER_WARNING);
+						}
+						
+						$classname = $module_file . '_module';
+						
+						if (!class_exists($classname))
+						{
+							include($phpbb_root_path . '/stats/modules/' . $module_file . '.' . $phpEx);
+						}
+						if (!class_exists($classname))
+						{
+							trigger_error(sprintf($user->lang['CLASS_NOT_FOUND'], $classname, $classname), E_USER_ERROR);
+						}
+						$c_class = new $classname();
+						
+						if(!empty($c_class->language))
+						{
+							$user->add_lang('mods/stats/' . $c_class->language);
+						}
+						
+						// grab the module order from the database
+						$sql = 'SELECT MAX(module_order) as module_order
+								FROM ' . STATS_MODULES_TABLE . '
+								WHERE module_parent = ' . $parent;
+						$result = $db->sql_query($sql);
+						$module_order = $db->sql_fetchfield('module_order');
+						$db->sql_freeresult($result);
+						
+						$sql_ary = array(
+							'module_classname'	=> $module_file,
+							'module_order'		=> $module_order + 1,
+							'module_name'		=> $c_class->name,
+							'module_parent'		=> $parent,
+							'module_status'		=> true,
+						);
+						$sql = 'INSERT INTO ' . STATS_MODULES_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
+						$db->sql_query($sql);
+						
+						$cache->destroy('stats_modules');
+						$redirect = (!empty($sql_ary['module_parent'])) ? $this->u_action . '&amp;view=sub&amp;parent_id=' . $sql_ary['module_parent'] : $this->u_action;
+						redirect($redirect);
+					}
+					
+					// create an array with all installed module classes
+					$classes = $modules_ary = array();
+					foreach ($stats->modules as $module)
+					{
+						$classes[] = $module['module_classname'];
+					}
+					
+					$dp = @opendir("{$phpbb_root_path}stats/modules");
+					
+					while(($file = readdir($dp)) !== false)
+					{	
+						if ($file[0] != '.')
+						{
+							$classname = str_replace('.php', '', $file);
+							if(!in_array($classname, $classes))
+							{
+								if (!class_exists($classname . '_module'))
+								{
+									include($phpbb_root_path . '/stats/modules/' . $classname . '.' . $phpEx);
+								}
+								if (!class_exists($classname . '_module'))
+								{
+									trigger_error(sprintf($user->lang['CLASS_NOT_FOUND'], $classname, $classname), E_USER_ERROR);
+								}
+								$classname = $classname . '_module';
+								$c_class = new $classname();
+								
+								if(!empty($c_class->language))
+								{
+									$user->add_lang('mods/stats/' . $c_class->language);
+								}
+								
+								$modules_ary[] = array(
+									'file'		=> str_replace('.php', '', $file),
+									'name'		=> $user->lang[$c_class->name],
+								);
+							}
+						}
+					}
+					closedir($dp);
+					
+					if (!empty($modules_ary))
+					{
+						// we sort the $modules_ary array by the name of the modules
+						$name_ary = array();
+						foreach($modules_ary as $key => $cur_mod)
+						{
+							$name_ary[$key] = $cur_mod['name'];
+						}
+						array_multisort($name_ary, SORT_REGULAR, $modules_ary);
+						$options = '';
+						foreach ($modules_ary as $module)
+						{
+							$options .= '<option value="' . $module['file'] . '">' . $module['name'] . '</option>';
+						}
+						
+						$s_hidden_fields = build_hidden_fields(array(
+							'add_module'	=> true,
+							'view'			=> $view,
+							'parent_id'		=> $parent,
+						));
+						
+						$template->assign_vars(array(
+							'S_MODULE_NAMES'	=> $options,
+							'S_ADD_MODULE'		=> true,
+							'S_HIDDEN_FIELDS'	=> $s_hidden_fields,
+							'L_TITLE'			=> $user->lang['ADD_MODULE'],
+							'L_TITLE_EXPLAIN'	=> $user->lang['ACP_STATS_MODULES_INFO_EXPLAIN'],
+						));
+						
+						break; // done in here
+					}
+					else
+					{
+						trigger_error('NO_MODULE', E_USER_WARNING);
+					}
+					
+				}
+
 				switch ($view)
 				{
 					case 'sub':
@@ -477,6 +611,11 @@ class acp_stats
 		$cfg_array = (isset($_REQUEST['config'])) ? utf8_normalize_nfc(request_var('config', array('' => ''), true)) : $this->new_config;
 		$error = array();
 		
+		if (($submit && !check_form_key($form_key)) || ($add_module && !check_form_key($form_key)))
+		{
+			$error[] = $user->lang['FORM_INVALID'];
+		}
+	
 		// We validate the complete config if whished
 		if(isset($display_vars) && sizeof($display_vars) > 0)
 		{
@@ -533,7 +672,7 @@ class acp_stats
 				'S_ERROR'			=> (sizeof($error)) ? true : false,
 				'ERROR_MSG'			=> implode('<br />', $error),
 
-				'U_ACTION'			=> ($mode == 'addons' && $addon_action == 'edit') ? $this->u_action . "&amp;addon_name=$addon_name&amp;addon_action=$addon_action" : $this->u_action)
+				'U_ACTION'			=> ($mode == 'modules' && $view == 'edit') ? $this->u_action . "&amp;addon_name=$addon_name&amp;addon_action=$addon_action" : $this->u_action)
 			);
 
 			// Output relevant page
@@ -582,7 +721,13 @@ class acp_stats
 			$this->tpl_name = 'acp_stats_modules';
 			$this->page_title = $user->lang['ACP_STATS_MODULES_INFO'];
 			
-			//$template->assign_var('S_UNINSTALLED_ADDONS', $uninstalled_addons);
+			$template->assign_vars(array(
+
+				'S_ERROR'			=> (sizeof($error)) ? true : false,
+				'ERROR_MSG'			=> implode('<br />', $error),
+
+				'U_ACTION'			=> $this->u_action . (($view == 'sub') ? '&amp;view=sub&amp;parent_id=' . $parent : ''),
+			));
 		}
 	}
 	

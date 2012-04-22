@@ -8,6 +8,29 @@
 
 <p>{L_TITLE_EXPLAIN}</p>
 
+<!-- IF S_ERROR -->
+	<div class="errorbox">
+		<h3>{L_WARNING}</h3>
+		<p>{ERROR_MSG}</p>
+	</div>
+<!-- ENDIF -->
+
+<!-- IF S_ADD_MODULE -->
+<form id="acp_stats" method="post" action="{U_ACTION}">
+	<fieldset>
+		<legend>{L_GENERAL_OPTIONS}</legend>
+		<dl>
+			<dt><label for="module_classname">{L_CHOOSE_MODULE}:</label><br /><span>{L_CHOOSE_MODULE_EXPLAIN}</span></dt>
+			<dd><select name="module_classname" id="module_classname">{S_MODULE_NAMES}</select></dd>
+		</dl>
+
+		<p class="submit-buttons">
+			<input class="button1" type="submit" id="submit" name="submit" value="{L_SUBMIT}" />&nbsp;
+			{S_FORM_TOKEN}{S_HIDDEN_FIELDS}
+		</p>
+	</fieldset>
+</form>
+<!-- ELSE -->
 <table cellspacing="1">
 	<col class="row1" /><col class="row2" />
 <thead>
@@ -50,10 +73,10 @@
 <form id="acp_stats" method="post" action="{U_ACTION}">
 <fieldset class="tabulated">
 	<p class="quick">
-		<input class="button2" type="submit" value="{L_ADD_MODULE}" name="quickadd" />
+		<input class="button2" type="submit" value="{L_ADD_MODULE}" name="add_module" />
 	</p>
 	{S_FORM_TOKEN}
 </fieldset>
 </form>
-
+<!-- ENDIF -->
 <!-- INCLUDE overall_footer.html -->
