@@ -27,6 +27,7 @@ $lang = array_merge($lang, array(
 	'ACP_STATS_GENERAL_SETTINGS' 				=> 'General Settings',
 	'ACP_STATS_GENERAL_SETTINGS_EXPLAIN'		=> 'On this page, you can change settings which concern the whole Statistics MOD',
 	'ACP_STATS_MODULE_MOVE_SUCCESS'				=> 'Module moved successfully.',
+	'ACP_STATS_MODULE_ADD_ERROR'				=> 'An error occured while trying to add the module %1s.',
 	
 	// settings
 	'ACP_STATS_ENABLE'							=> 'Enable Statistics',

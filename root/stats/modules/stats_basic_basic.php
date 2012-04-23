@@ -88,4 +88,27 @@ class stats_basic_basic_module
 		
 		return 'basic_basic.html';
 	}
+
+	
+	/**
+	* return acp settings
+	*/
+	public function load_acp()
+	{
+		return array();
+	}
+	
+	/**
+	* API Functions
+	*/
+	
+	public function install()
+	{
+		return true;
+	}
+	
+	public function uninstall()
+	{
+		return true;
+	}
 }

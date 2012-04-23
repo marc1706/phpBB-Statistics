@@ -174,4 +174,39 @@ class stats_basic_miscellaneous_module
 		
 		return 'basic_miscellaneous.html';
 	}
+
+	/**
+	* return acp settings
+	*/
+	public function load_acp()
+	{
+		return array(
+			'title'	=> 'ACP_BASIC_MISCELLANEOUS_SETTINGS',
+			'vars'	=> array(
+				'legend3'							=> 'ACP_BASIC_MISCELLANEOUS_SETTINGS',
+				'stats_basic_miscellaneous_hide_warnings'	=> array('lang' => 'ACP_BASIC_MISCELLANEOUS_WARNINGS'  , 'validate' => 'bool'  , 'type' => 'radio:yes_no'  , 'explain' => true),
+			)
+		);
+	}
+	
+	/**
+	* API Functions
+	*/
+	
+	public function install()
+	{
+		set_config('stats_basic_miscellaneous_hide_warnings', 0);
+		
+		return true;
+	}
+	
+	public function uninstall()
+	{
+		$sql = 'DELETE FROM ' . CONFIG_TABLE . "
+				WHERE config_name = 'stats_basic_miscellaneous_hide_warnings'";
+		$db->sql_query($sql);
+		
+		return true;
+	}
+	
 }

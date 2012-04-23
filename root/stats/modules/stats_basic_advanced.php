@@ -260,4 +260,46 @@ class stats_basic_advanced_module
 		
 		return 'basic_advanced.html';
 	}
+	
+	/**
+	* return acp settings
+	*/
+	public function load_acp()
+	{
+		return array(
+			'title'	=> 'ACP_BASIC_ADVANCED_SETTINGS',
+			'vars'	=> array(
+				'legend2'							=> 'ACP_BASIC_ADVANCED_SETTINGS',
+				'stats_advanced_security'			=> array('lang' => 'ACP_BASIC_ADVANCED_SECURITY'  , 'validate' => 'bool'  , 'type' => 'radio:yes_no'  , 'explain' => true),
+				'stats_advanced_pretend_version'	=> array('lang' => 'ACP_BASIC_ADVANCED_PRETEND'  , 'validate' => 'bool'  , 'type' => 'radio:yes_no'  , 'explain' => true),
+			)
+		);
+	}
+	
+	/**
+	* API Functions
+	*/
+	
+	public function install()
+	{
+		set_config('stats_advanced_security', 1);
+		set_config('stats_advanced_pretend_version', 1);
+		
+		return true;
+	}
+	
+	public function uninstall()
+	{
+		global $db;
+		
+		$del_ary = array(
+			'stats_advanced_security',
+			'stats_advanced_pretend_version',
+		);
+		$sql = 'DELETE FROM ' . CONFIG_TABLE . '
+				WHERE ' . $db->sql_in_set('config_name', $del_ary);
+		$db->sql_query($sql);
+		
+		return true;
+	}
 }

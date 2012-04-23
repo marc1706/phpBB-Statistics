@@ -428,6 +428,12 @@ class acp_stats
 						$sql = 'INSERT INTO ' . STATS_MODULES_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
 						$db->sql_query($sql);
 						
+						$module_error = $c_class->install()
+						if ($module_error == true)
+						{
+							trigger_error(sprintf($user->lang['ACP_STATS_MODULE_ADD_ERROR'], $module_file) . adm_back_link($this->u_action));
+						}
+						
 						$cache->destroy('stats_modules');
 						$redirect = (!empty($sql_ary['module_parent'])) ? $this->u_action . '&amp;view=sub&amp;parent_id=' . $sql_ary['module_parent'] : $this->u_action;
 						redirect($redirect);
