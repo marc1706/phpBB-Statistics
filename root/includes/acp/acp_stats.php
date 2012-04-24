@@ -292,14 +292,14 @@ class acp_stats
 				$user->add_lang('acp/modules');
 				$view = request_var('view', '');
 				$parent = request_var('parent_id', 0);
-				$id = request_var('id', 0);
+				$module_id = request_var('id', 0);
 				
 				switch ($action)
 				{
 					case 'move_up':
 						foreach ($stats->modules as $module)
 						{
-							if ($module['module_id'] == $id)
+							if ($module['module_id'] == $module_id)
 							{
 								break; // just leave all data in $module
 							}
@@ -317,7 +317,7 @@ class acp_stats
 					case 'move_down':
 						foreach ($stats->modules as $module)
 						{
-							if ($module['module_id'] == $id)
+							if ($module['module_id'] == $module_id)
 							{
 								break; // just leave all data in $module
 							}
@@ -334,7 +334,7 @@ class acp_stats
 					case 'enable':
 						foreach ($stats->modules as $module)
 						{
-							if ($module['module_id'] == $id)
+							if ($module['module_id'] == $module_id)
 							{
 								break; // just leave all data in $module
 							}
@@ -359,7 +359,7 @@ class acp_stats
 					case 'disable':
 						foreach ($stats->modules as $module)
 						{
-							if ($module['module_id'] == $id)
+							if ($module['module_id'] == $module_id)
 							{
 								break; // just leave all data in $module
 							}
@@ -379,6 +379,75 @@ class acp_stats
 						
 						$cache->destroy('stats_modules');
 						redirect($redirect);
+					break;
+					
+					case 'remove':
+						if (confirm_box(true))
+						{
+							$sql = 'SELECT module_classname AS module_file, module_parent as parent
+									FROM ' . STATS_MODULES_TABLE . '
+									WHERE module_id = ' . (int) $module_id;
+							$result = $db->sql_query($sql);
+							$module_file = $db->sql_fetchfield('module_file');
+							$module_parent = $db->sql_fetchfield('parent');
+							$db->sql_freeresult($result);
+							
+							$classname = $module_file . '_module';
+							$redirect = (!empty($parent)) ? $this->u_action . '&amp;view=sub&amp;parent_id=' . $parent : $this->u_action;
+						
+							if (!empty($module_parent))
+							{
+								if (!class_exists($classname))
+								{
+									include($phpbb_root_path . '/stats/modules/' . $module_file . '.' . $phpEx);
+								}
+								if (!class_exists($classname))
+								{
+									trigger_error(sprintf($user->lang['CLASS_NOT_FOUND'], $classname, $classname), E_USER_ERROR);
+								}
+								$c_class = new $classname();
+								
+								$c_class->uninstall();
+							}
+							else
+							{
+								$sql = 'SELECT COUNT(module_id) AS submodules
+										FROM ' . STATS_MODULES_TABLE . '
+										WHERE module_parent = ' . (int) $module_id;
+								$result = $db->sql_query($sql);
+								$submodules = $db->sql_fetchfield('submodules');
+								$db->sql_freeresult($result);
+								
+								if (!empty($submodules))
+								{
+									trigger_error($user->lang['CANNOT_REMOVE_MODULE'] . adm_back_link($redirect));
+								}
+							}
+							
+							$sql = 'DELETE FROM ' . STATS_MODULES_TABLE . ' 
+									WHERE module_id = ' . (int) $module_id;
+							$db->sql_query($sql);
+							
+							$cache->destroy('config');
+							$cache->destroy('stats_modules');
+							
+							// We need to return to the module config
+							meta_refresh(3, $redirect);
+							
+							trigger_error($user->lang['MODULE_DELETED'] . adm_back_link($redirect));
+						}
+						else
+						{
+							$confirm_text = $user->lang['DELETE_MODULE_CONFIRM'];
+							confirm_box(false, $confirm_text, build_hidden_fields(array(
+								'i'				=> $id,
+								'mode'			=> $mode,
+								'module_reset'	=> true,
+								'id'			=> $module_id,
+								'parent_id'		=> $parent,
+								'action'		=> $action,
+							)));
+						}
 					break;
 				}
 				
@@ -428,8 +497,8 @@ class acp_stats
 						$sql = 'INSERT INTO ' . STATS_MODULES_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
 						$db->sql_query($sql);
 						
-						$module_error = $c_class->install()
-						if ($module_error == true)
+						$module_error = $c_class->install();
+						if ($module_error == false)
 						{
 							trigger_error(sprintf($user->lang['ACP_STATS_MODULE_ADD_ERROR'], $module_file) . adm_back_link($this->u_action));
 						}
@@ -550,12 +619,11 @@ class acp_stats
 							$s_actions = '<a href="' . $this->u_action . '&amp;id=' . $cur_module['module_id'] . '&amp;action=';
 							$s_actions .= ($cur_module['module_status']) ? 'disable">' : 'enable">';
 							$s_actions .= ($cur_module['module_status']) ? $user->lang['DEACTIVATE'] : $user->lang['ACTIVATE'];
-							$s_actions .= '</a> | <a href="' . $this->u_action . '&amp;id=' . $cur_module['module_id'] . '&amp;action=remove">' . $user->lang['DELETE'] . '</a>';
+							$s_actions .= '</a> | <a href="' . $this->u_action . '&amp;id=' . $cur_module['module_id'] . '&amp;parent_id=' . $cur_module['module_parent'] . '&amp;action=remove">' . $user->lang['DELETE'] . '</a>';
 							$template->assign_block_vars('stats_row', array(
 								'NAME'			=> (isset($user->lang[$cur_module['module_name']])) ? $user->lang[$cur_module['module_name']] : $cur_module['module_name'],
 								'U_EDIT'		=> $this->u_action . '&amp;view=edit&amp;id=' . $cur_module['module_id'],
 								'S_EDIT'		=> true, // @todo: we'll need to find out which module we can edit
-								'U_DELETE'		=> $this->u_action . '&amp;action=delete&amp;id=' . $cur_module['module_id'],
 								'U_MOVE_UP'		=> $this->u_action . '&amp;id=' . $cur_module['module_id'] . '&amp;action=move_up',
 								'U_MOVE_DOWN'	=> $this->u_action . '&amp;id=' . $cur_module['module_id'] . '&amp;action=move_down',
 								'S_ACTIONS'		=> $s_actions,

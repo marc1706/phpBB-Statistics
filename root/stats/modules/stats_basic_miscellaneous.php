@@ -202,6 +202,8 @@ class stats_basic_miscellaneous_module
 	
 	public function uninstall()
 	{
+		global $db;
+
 		$sql = 'DELETE FROM ' . CONFIG_TABLE . "
 				WHERE config_name = 'stats_basic_miscellaneous_hide_warnings'";
 		$db->sql_query($sql);
