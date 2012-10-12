@@ -39,6 +39,19 @@ class phpbb_stats
 			include($phpbb_root_path . 'stats/includes/constants.' . $phpEx);
 		}
 		
+		// include the db functions
+		if (!class_exists('phpbb_stats_dbal'))
+		{
+			include($phpbb_root_path . 'stats/includes/functions_db.' . $phpEx);
+			
+			if (!class_exists('phpbb_stats_dbal'))
+			{
+				trigger_error(sprintf('CLASS_NOT_FOUND', 'phpbb_stats_dbal'));
+			}
+		}
+		
+		$this->dbal = new phpbb_stats_dbal();
+		
 		// cache time is in hours
 		$this->cache_time = $config['stats_cache_time'] * 3600;
 		

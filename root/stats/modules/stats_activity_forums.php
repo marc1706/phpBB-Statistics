@@ -36,17 +36,32 @@ class stats_activity_forums_module
 	public function get_stats()
 	{
 		global $db, $config, $template, $stats, $user;
+
+		// create sort by drop-down list
+		$sort_by = request_var('top_ct', 10);
+
+		$options = array(
+			1		=> 1,
+			3		=> 3,
+			5		=> 5,
+			10		=> 10,
+			15		=> 15,
+		);
+		
+		$stats->create_sort_by($options, 'top_ct_row', $sort_by);
 		
 		// get total forum counts
 		$forum_types = $stats->forum_type_count();
 		$total_forums = $forum_types[FORUM_CAT] + $forum_types[FORUM_POST] + $forum_types[FORUM_LINK];
+		
+		// get top forums by topics
 
 		$template->assign_vars(array(
 			'TOTAL_FORUMS'			=> $total_forums,
 			'TOTAL_CAT_FORUMS'		=> $forum_types[FORUM_CAT],
 			'TOTAL_POSTING_FORUMS'	=> $forum_types[FORUM_POST],
 			'TOTAL_LINK_FORUMS'		=> $forum_types[FORUM_LINK],
-			
+			'SORT_BY_PROMPT'		=> sprintf($user->lang['LIMIT_PROMPT'], $user->lang['FORUMS']),
 
 		));
 		
