@@ -35,10 +35,11 @@ class stats_activity_forums_module
 	*/
 	public function get_stats()
 	{
-		global $db, $config, $template, $stats, $user;
+		global $db, $config, $template, $stats, $user, $stats_dbal;
 
 		// create sort by drop-down list
 		$sort_by = request_var('top_ct', 10);
+		$top_forums_by_topic = array();
 
 		$options = array(
 			1		=> 1,
@@ -55,6 +56,14 @@ class stats_activity_forums_module
 		$total_forums = $forum_types[FORUM_CAT] + $forum_types[FORUM_POST] + $forum_types[FORUM_LINK];
 		
 		// get top forums by topics
+		$sql = 'SELECT f.forum_id AS f_id, f.forum_name AS f_name, f.forum_topics_real AS count
+					FROM ' . FORUMS_TABLE . ' f					
+					WHERE f.forum_id <> 0
+						AND f.forum_type = ' . FORUM_POST . '
+					GROUP BY f.forum_id, f.forum_name, f.forum_topics_real
+					ORDER BY count DESC';
+		$top_forums_by_topic = $stats_dbal->sql_split_query($sql, 2, 'f_id');
+		print_r($top_forums_by_topic);
 
 		$template->assign_vars(array(
 			'TOTAL_FORUMS'			=> $total_forums,

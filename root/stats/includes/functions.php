@@ -554,7 +554,7 @@ class phpbb_stats
 		
 		if ($update)
 		{
-			$start = request_var('start_bbcode', 0);
+			$start = request_var('start', 0);
 
 			//	first we have to get all posts from the database
 			$sql = 'SELECT post_text 
@@ -590,7 +590,7 @@ class phpbb_stats
 			
 			if($affected_rows == 5000) // set this to the limit number of the post_text sql query
 			{
-				$url = $this->u_action . '&amp;update_bbcode=1&amp;start_bbcode=' . ($start + 5000); // add the limit number to $start
+				$url = $this->u_action . '&amp;update_bbcode=1&amp;start=' . ($start + 5000); // add the limit number to $start
 				meta_refresh(5, $url); // time is set to 5 seconds -- that should be enough for 5000 posts
 				return false; // Tell script that we need a refresh
 			}
@@ -651,6 +651,10 @@ class phpbb_stats
 		if (empty($type))
 		{
 			return array_slice($ret, 0, $limit, true);
+		}
+		elseif (empty($ret))
+		{
+			return 0;
 		}
 		else // currently also return the total smiley count
 		{
@@ -714,7 +718,7 @@ class phpbb_stats
 		
 		if ($update)
 		{
-			$start = request_var('start_smiley', 0);
+			$start = request_var('start', 0);
 
 			//	first we have to get all posts from the database
 			$sql = 'SELECT post_text 
@@ -751,7 +755,7 @@ class phpbb_stats
 			
 			if($affected_rows == 5000) // set this to the limit number of the post_text sql query
 			{
-				$url = $this->u_action . '&amp;update_smiley=1&amp;start_smiley=' . ($start + 5000); // add the limit number to $start
+				$url = $this->u_action . '&amp;update_smiley=1&amp;start=' . ($start + 5000); // add the limit number to $start
 				meta_refresh(5, $url); // time is set to 5 seconds -- that should be enough for 5000 posts
 				return false; // Tell script that we need a refresh
 			}
