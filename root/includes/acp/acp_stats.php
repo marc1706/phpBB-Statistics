@@ -61,7 +61,7 @@ class acp_stats
 				}
 				if (!class_exists($classname))
 				{
-					trigger_error(sprintf($user->lang['CLASS_NOT_FOUND'], $classname, $row['addon_classname']), E_USER_ERROR);
+					trigger_error(sprintf($user->lang['STATS_ADDON_NOT_FOUND'], $classname, $row['addon_classname']), E_USER_ERROR);
 				}
 				
 				$addon = new $classname();
@@ -155,7 +155,7 @@ class acp_stats
 				}
 				if (!class_exists($classname))
 				{
-					trigger_error(sprintf($user->lang['CLASS_NOT_FOUND'], $classname, $classname), E_USER_ERROR);
+					trigger_error(sprintf($user->lang['STATS_ADDON_NOT_FOUND'], $classname, $classname), E_USER_ERROR);
 				}
 				
 				$addon = new $classname();
@@ -187,16 +187,22 @@ class acp_stats
 			{	
 				if ($file[0] != '.')
 				{
-					$classname = str_replace('.php', '', $file);
+					if (!preg_match('/^[a-zA-Z0-9_]+[\.]+[a-zA-Z0-9]+$/', $file, $match))
+					{
+						continue;
+					}
+
+					$classname = str_replace(".{$phpEx}", '', $match[0]);
+
 					if(!isset($addons[$classname]))
 					{
-						if (!class_exists($classname))
+						if (!class_exists($classname) && file_exists($phpbb_root_path . '/statistics/addons/' . $classname . '.' . $phpEx))
 						{
 							include($phpbb_root_path . '/statistics/addons/' . $classname . '.' . $phpEx);
 						}
 						if (!class_exists($classname))
 						{
-							trigger_error(sprintf($user->lang['CLASS_NOT_FOUND'], $classname, $classname), E_USER_ERROR);
+							trigger_error(sprintf($user->lang['STATS_ADDON_NOT_FOUND'], $classname, $classname), E_USER_ERROR);
 						}
 						
 						$addon = new $classname();
@@ -428,5 +434,3 @@ class acp_stats
 	
 	
 }
-
-?>

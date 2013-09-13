@@ -69,7 +69,7 @@ class stats_addons
 			}
 			if (!class_exists($classname))
 			{
-				trigger_error(sprintf($user->lang['CLASS_NOT_FOUND'], $classname, $row['addon_classname']), E_USER_ERROR);
+				trigger_error(sprintf($user->lang['STATS_ADDON_NOT_FOUND'], $classname, $row['addon_classname']), E_USER_ERROR);
 			}
 			
 			$module = new $classname();
@@ -140,15 +140,22 @@ class stats_addons
 		*/
 		if($done_first == false && strlen($addon) > 0 && !isset($addons[$addon]) && $auth->acl_get('a_'))
 		{
-			if (!class_exists($addon))
+			if (!preg_match('/^[a-zA-Z0-9_]+$/', $addon, $match))
+			{
+				trigger_error(sprintf($user->lang['STATS_ADDON_NOT_FOUND'], $addon, $addon), E_USER_ERROR);
+			}
+
+			$addon = $match[0];
+
+			if (!class_exists($addon) && file_exists("{$stats_addons_path}{$addon}.$phpEx"))
 			{
 				include("{$stats_addons_path}{$addon}.$phpEx");
 			}
 			if (!class_exists($addon))
 			{
-				trigger_error(sprintf($user->lang['CLASS_NOT_FOUND'], $addon, $addon), E_USER_ERROR);
+				trigger_error(sprintf($user->lang['STATS_ADDON_NOT_FOUND'], $addon, $addon), E_USER_ERROR);
 			}
-			
+
 			$module = new $addon();
 			
 			$module->install();
@@ -186,4 +193,3 @@ class stats_addons
 		
 	}
 }
-?>

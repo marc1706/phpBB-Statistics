@@ -42,6 +42,7 @@ $lang = array_merge($lang, array(
 	'STATS_SETTINGS_PROFILE'			=> 'Profile Settings Statistics',
 	'STATS_ADDONS'						=> 'Add-Ons',
 	'STATS_ADDONS_MISCELLANEOUS'		=> 'hide',
+	'STATS_ADDON_NOT_FOUND'				=> 'The class "%1s" specified for the Add-On "%2s" does not exist.',
 	'STATS_DISABLED'					=> ' are currently disabled',
 	
 	'TOTALS'							=> 'Totals',
