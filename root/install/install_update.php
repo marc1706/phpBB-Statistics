@@ -452,7 +452,7 @@ class install_update extends module
 				set_stats_config('resync_stats', '1');
 				set_stats_config('resync_stats_last_sync', '1');
 			break;
-			
+
 			default:
 				trigger_error($user->lang['UNSUPPORTED_VERSION']);
 			break;

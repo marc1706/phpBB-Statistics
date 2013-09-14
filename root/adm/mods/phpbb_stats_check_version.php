@@ -33,7 +33,7 @@ class phpbb_stats_check_version
 			'title'		=> 'phpBB Statistics',
 			'tag'		=> 'phpbb_stats',
 			'version'	=> $stats_config['stats_version'],
-			'file'		=> array('m-a-styles.de', 'updatecheck', 'phpbb_stats.xml'),
+			'file'		=> array('www.m-a-styles.de', 'updatecheck', 'phpbb_stats.xml'),
 		);
 	}
 }

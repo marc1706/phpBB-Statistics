@@ -115,7 +115,10 @@ function stats_create_table($table, $dbms_data, $drop = true)
 {
 	global $db, $table_prefix, $db_schema, $delimiter;
 
-	$table_name = substr($table . '#', 6, -1);
+	if (!is_array($table))
+	{
+		$table_name = substr($table . '#', 6, -1);
+	}
 	$db_schema = $dbms_data['db_schema'];
 	$delimiter = $dbms_data['delimiter'];
 
@@ -130,7 +133,7 @@ function stats_create_table($table, $dbms_data, $drop = true)
 		}
 		else
 		{
-		stats_drop_table($table);
+			stats_drop_table($table);
 		}
 	}
 
