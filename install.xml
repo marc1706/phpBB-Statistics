@@ -37,14 +37,24 @@
 			</author>
 		</author-group>
 		
-		<mod-version>1.0.3</mod-version>
+		<mod-version>1.0.3-PL1</mod-version>
 		<installation>
 		  <level>easy</level>
 		  <time>300</time>
-		<target-version>3.0.8</target-version>
+		<target-version>3.0.11</target-version>
 		</installation>
 
 		<history>
+			<entry>
+				<date>2013-09-14</date>
+				<rev-version>1.0.3-PL1</rev-version>
+				<changelog lang="en">
+				    <change>[Fixed] Incorrect version number</change>
+				    <change>[Fixed] Incompatible install.xml for 3.0.11</change>
+				    <change>[Fixed] Possibility for admins to include incorrect files as add-ons</change>
+				    <change>[Fixed] Missing language variable for incorrect add-ons</change>
+				</changelog>
+			</entry>
 			<entry>
 				<date>2011-02-09</date>
 				<rev-version>1.0.3</rev-version>
@@ -413,7 +423,7 @@
 						// END MOD]]></action>
 			</edit>
 			<edit>
-				<find><![CDATA[1	=> array('field_ident', 'lang_name', 'lang_explain', 'field_option_none', 'field_show_on_reg', 'field_show_on_vt', 'field_required', 'field_hide', 'field_show_profile', 'field_no_view'),]]></find>
+				<find><![CDATA[1	=> array('field_ident', 'lang_name', 'lang_explain', 'field_option_none', 'field_show_on_reg', 'field_show_on_vt', 'field_required', 'field_show_novalue', 'field_hide', 'field_show_profile', 'field_no_view'),]]></find>
 				<inline-edit>
 					<inline-find><![CDATA['field_no_view']]></inline-find>
 					<inline-action type="after-add"><![CDATA[, 'field_stats_show']]></inline-action>

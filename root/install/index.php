@@ -13,7 +13,7 @@
 */
 define('IN_PHPBB', true);
 define('IN_INSTALL', true);
-define('NEW_PHPBB_STATS_VERSION', '1.0.2');
+define('NEW_PHPBB_STATS_VERSION', '1.0.3-PL1');
 /**#@-*/
 
 $phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './../';
